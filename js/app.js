@@ -3,6 +3,7 @@
 // und Speicherung (store.js) sind getrennte Module.
 
 import * as store from "./store.js";
+import {installNotebook} from "./notebook.js";
 import { WORLDS, TOPIC_BY_ID, AREAS } from "./curriculum.js";
 import { STORY, GREETINGS, BADGES, COSMETICS, BREAK_TEXT, VILLAGE } from "./content.js";
 import { dueSkills, describe, rec } from "./competence.js";
@@ -19,6 +20,7 @@ import * as klasse7 from "./klasse7.js";
 import { ROOMS } from "./lernorte-logic.js";
 
 const main = $("#app");
+installNotebook(main);
 const AVATARS = ["🦊", "🐰", "🐻", "🐼", "🐯", "🦁", "🐸", "🐙", "🐴", "🐢", "🦉", "🐧"];
 const ADVENTURES = {
   bridge: { name: "Die kaputte Brücke am Dorfbach", emoji: "🌉", desc: "Hilf Schreiner Brumm, die Brücke nach dem Sturm zu reparieren – mit genau passenden Brettern.", load: () => import("./adventures/bridge.js") },

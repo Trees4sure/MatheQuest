@@ -21,7 +21,7 @@ function load() {
   } catch (e) { /* leer */ }
   return { profiles: [], current: null, settings: { sound: true, speech: false, reducedMotion: false, breakMinutes: 20 } };
 }
-export function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* voll/privat */ } }
+export function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { return false; /* voll/privat */ } }
 // Lokale Sicherung für Gerätewechsel oder Neuinstallation; kein Upload, kein Konto.
 export function exportBackup() {return JSON.stringify({format:"mathequest-backup",version:1,created:today(),data:db},null,2);}
 export function importBackup(text) {
