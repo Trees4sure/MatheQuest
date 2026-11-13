@@ -1,6 +1,6 @@
 // MatheQuest – Service Worker: alles offline verfügbar.
 // Nach Änderungen VERSION hochzählen (mathequest-v3, -v4 …), dann lädt das Gerät die neuen Dateien.
-const VERSION = "mathequest-v11";
+const VERSION = "mathequest-v13";
 const CORE = [
   "./",
   "./index.html",
@@ -41,6 +41,7 @@ const CORE = [
   "./assets/scenes/rechenbach-karte.webp",
   "./assets/scenes/schreinerei.webp",
   "./css/journey.css",
+  "./css/notebook.css",
   "./css/style.css",
   "./fonts/atkinson-hyperlegible-latin-400-normal.woff2",
   "./fonts/atkinson-hyperlegible-latin-700-normal.woff2",
@@ -58,6 +59,7 @@ const CORE = [
   "./js/anschaulich.js",
   "./js/answer.js",
   "./js/app.js",
+  "./js/notebook.js",
   "./js/art.js",
   "./js/competence.js",
   "./js/content.js",
