@@ -12,8 +12,9 @@
 //   [data-hot="sun|fish|stump|bush|mushrooms"]   antippbare Stellen
 
 import { clearing } from "./art.js";
-import { settings } from "./store.js";
+import { settings, current } from "./store.js";
 import { spriteSvg } from "./sprites.js";
+import { stripSvg } from "./gang.js";
 
 const INK = "#3a2416";
 
@@ -68,8 +69,10 @@ const PAINTED = {
   brummScale: 1.65, // nur für die alte Zeichnung
   // gemalte Figuren (sprites.js): Lina 9 Jahre, Fips Jack-Russell-Mischling, Brumm Erwachsener
   bodies: {
-    party: () => `<g class="char party" data-mood="idle"><g class="body-wrap">${spriteSvg("fips", 128, 112)}${spriteSvg("lina", 262, 0)}</g></g>`,
-    brumm: (mood) => `<g class="char brumm" data-mood="${mood}"><g class="body-wrap"><g class="img-grumpy">${spriteSvg("brummGrummelig", 330)}</g><g class="img-happy">${spriteSvg("brummFroh", 330)}</g></g></g>`,
+    // .still = Standbilder, .moving = Laufstreifen (js/gang.js); die Klasse „walking“ am Akteur schaltet um.
+    // Die Spielfigur ist Lina oder Ben, je nach Profil.
+    party: () => { const hero = current()?.hero === "ben" ? "ben" : "lina"; return `<g class="char party gangfig" data-mood="idle"><g class="body-wrap"><g class="still">${spriteSvg("fips", 128, 112)}${spriteSvg(hero, 262, 0)}</g><g class="moving">${stripSvg("fips", 128, 112)}${stripSvg(hero, 262, 0)}</g></g></g>`; },
+    brumm: (mood) => `<g class="char brumm gangfig" data-mood="${mood}"><g class="body-wrap"><g class="still"><g class="img-grumpy">${spriteSvg("brummGrummelig", 330)}</g><g class="img-happy">${spriteSvg("brummFroh", 330)}</g></g><g class="moving">${stripSvg("brumm", 330)}</g></g></g>`,
     brummFacesLeft: true,
   },
   spots: { start: [330, 880], idle: [470, 850], stump: [440, 800], bush: [520, 720], mushrooms: [640, 880], fish: [780, 860], brumm: [520, 780] },

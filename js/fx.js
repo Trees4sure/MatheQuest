@@ -23,6 +23,13 @@ const SOUNDS = {
   win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.3, "triangle", 0.16)),
   level: () => [392, 523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i * 0.08, 0.25, "square", 0.07)),
   secret: () => [880, 1175, 1568].forEach((f, i) => tone(f, i * 0.09, 0.25, "sine", 0.12)),
+  /* Geräusche je Ort (im Browser erzeugt, keine Dateien): Huhn, Ladenglocke, Pfiff, Signalhorn, Hammer, Fanfare */
+  ort0: () => [0, 0.13, 0.26].forEach((t, i) => tone(i === 2 ? 520 : 440, t, 0.09, "square", 0.05)),
+  ort1: () => { tone(1568, 0, 0.6, "sine", 0.08); tone(2093, 0.02, 0.5, "sine", 0.05); },
+  ort2: () => { tone(1320, 0, 0.18, "sine", 0.1); tone(1320, 0.25, 0.45, "sine", 0.1); },
+  ort3: () => [0, 0.35, 0.7].forEach((t, i) => tone(i % 2 ? 587 : 440, t, 0.3, "triangle", 0.08)),
+  ort4: () => [0, 0.18, 0.36].forEach((t) => tone(180, t, 0.07, "square", 0.08)),
+  ort5: () => [523, 659, 784, 659, 1047].forEach((f, i) => tone(f, i * 0.12, 0.25, "triangle", 0.12)),
   creak: () => { tone(140, 0, 0.25, "sawtooth", 0.04); tone(120, 0.12, 0.25, "sawtooth", 0.04); },
 };
 export function sound(name) { if (settings().sound) try { SOUNDS[name]?.(); } catch (e) { /* stumm */ } }

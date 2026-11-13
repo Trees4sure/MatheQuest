@@ -38,6 +38,7 @@ export function portraitArt(who) {
     if (who === "brumm-happy") return brumm({ mood: "happy" });
     return null;
   }
+  if (who === "👩‍🌾") return `<img class="sprite por-img" src="assets/chars/portrait-hoppe.webp" width="237" height="200" alt="" draggable="false">`;
   const map = { lina: "lina", fips: "fips", brumm: "brummGrummelig", "brumm-happy": "brummFroh" };
   return map[who] ? spriteImg(map[who], "por-img") : null;
 }

@@ -23,7 +23,7 @@ export async function run(main, { go, onBadges }) {
   main.innerHTML = `<section class="adv${SC.wide ? " adv-wide" : ""}">
     <header class="adv-top"><button class="ghost" data-back aria-label="Zurück">←</button>
       <h1 class="adv-title">🌉 Die kaputte Brücke am Dorfbach</h1>
-      <div class="hud"><span title="Sticker">🌟 <b data-shards>${p.shards}</b></span><span title="Münzen">🪙 <b data-coins>${p.coins}</b></span></div></header>
+      <div class="hud"><span title="Sticker">🌟 <b data-shards>${p.shards}</b></span><span title="Münzen">💰 <b data-coins>${p.coins}</b></span></div></header>
     <div class="scene${SC.wide ? " scene-wide" : ""}" data-scene>${SC.svg()}</div>
     <div class="adv-panel" data-panel></div>
   </section>`;
@@ -284,7 +284,10 @@ export async function run(main, { go, onBadges }) {
     busy = true;
     $(".barrier", svg).classList.add("lift"); $(".sign", svg).classList.add("gone-sign");
     sound("win"); confetti(90);
-    setMood("#aBrumm", "happy"); place(B, ...SC.brummAside, reduced() ? 0 : 900);
+    setMood("#aBrumm", "happy");
+    // Brumm geht zur Seite: für den Weg nach rechts schauen und laufen, danach wieder zu Lina drehen.
+    if (!reduced()) { const flip = $(".flip", B), turned = flip.getAttribute("transform"); flip.setAttribute("transform", ""); B.classList.add("walking"); setTimeout(() => { B.classList.remove("walking"); if (turned) flip.setAttribute("transform", turned); }, 900); }
+    place(B, ...SC.brummAside, reduced() ? 0 : 900);
     const last = rounds[2].gap, mine = [...solutions[2]].sort((a, b) => b - a).join();
     const other = decompositions(last).filter((d) => d.length === 2 && d.join() !== mine);
     await talk(main, [

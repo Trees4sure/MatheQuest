@@ -3,7 +3,10 @@ import {current,save} from './store.js';
 
 const MAX_POINTS=20000, MAX_STROKES=300;
 function clean(value={}) {
-  const n={text:typeof value?.text==='string'?value.text.slice(0,20000):'',mode:value?.mode==='draw'?'draw':'text',open:value?.open!==false,strokes:[]};
+  const n={text:typeof value?.text==='string'?value.text.slice(0,20000):'',mode:value?.mode==='draw'?'draw':'text',
+    // Standardmäßig zugeklappt: Aufgeklappt schob der Zettel das Antwortfeld anderthalb Bildschirme nach unten.
+    // Neuer Feldname, damit das früher automatisch gespeicherte „offen“ nicht weiterwirkt.
+    open:value?.shown===true,shown:value?.shown===true,strokes:[]};
   let count=0;
   for(const line of (Array.isArray(value?.strokes)?value.strokes:[]).slice(0,MAX_STROKES)){
     if(!Array.isArray(line))continue;
@@ -93,7 +96,7 @@ function mount(anchor,profile){
     if(b.hasAttribute('data-np-clear')){end();backup={text:n.text,strokes:n.strokes};n.text='';n.strokes=[];area.value='';persist();controls();}
     if(b.hasAttribute('data-np-undo')){end();if(backup){n.text=backup.text;n.strokes=backup.strokes;area.value=n.text;backup=null;}else n.strokes.pop();persist();controls();}
   });
-  node.addEventListener('toggle',()=>{if(disposed)return;n.open=node.open;persist();controls();});
+  node.addEventListener('toggle',()=>{if(disposed)return;n.open=n.shown=node.open;persist();controls();});
   const resize=new ResizeObserver(render);resize.observe(canvas);
   const hide=()=>end();window.addEventListener('pagehide',hide);
   q('.np-status').textContent='Notizen bleiben auf diesem Gerät · werden nicht bewertet';controls();

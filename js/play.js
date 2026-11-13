@@ -172,7 +172,7 @@ export function start(main, cfg, { go, onBadges, back }) {
       <h1>${esc(headline)}</h1>
       <div class="stars big-stars" aria-label="${stars} Sterne">${"⭐".repeat(stars)}${"☆".repeat(3 - stars)}</div>
       <p>${esc(text)}</p>
-      <div class="gain"><span>+${S.xp} XP</span><span>+${S.coins} 🪙</span></div>
+      <div class="gain"><span>+${S.xp} XP</span><span>+${S.coins} 💰</span></div>
       ${lvl ? `<div class="levelup">⬆️ Level ${lvl}!</div>` : ""}
       <div class="row-actions">
         ${cfg.mode === "train" ? `<button class="btn big" data-again>Nochmal ▶</button>` : ""}

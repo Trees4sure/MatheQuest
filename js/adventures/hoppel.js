@@ -5,10 +5,13 @@
 
 import { meadow, fips, lina, hoppel, carrot } from "../art.js";
 import { $, $$, talk, toast, wait, pick } from "../ui.js";
+import { painted, spriteImg } from "../sprites.js";
 import { sound, buzz, confetti, sparkle, reduced } from "../fx.js";
 import { current, adv, reward, unlockCosmetic, recordAnswer, checkBadges, save } from "../store.js";
 import { update as competence, rec, scheduleReview } from "../competence.js";
 import { makeHop, question, equation, hopsTo, jumps } from "./hoppel-logic.js";
+/* Gemaltes Kaninchen Hoppel (JPs Bild), bei Einstellung „Alte Zeichnung“ die Code-Zeichnung. */
+const bunny = () => painted() ? '<img class="hoppel-img" src="assets/chars/hoppel.webp" alt="Hoppel" draggable="false">' : hoppel();
 
 const SKILL = "adv-zahlenstrahl";
 const GOAL = 5;
@@ -18,9 +21,9 @@ export async function run(main, { go, onBadges }) {
   main.innerHTML = `<section class="adv">
     <header class="adv-top"><button class="ghost" data-back aria-label="Zurück zur Region">←</button>
       <h1 class="adv-title">🐇 Hoppel im Gemüsegarten</h1>
-      <div class="hud"><span title="Möhren">🥕 <b data-got>0</b>/${GOAL}</span><span title="Münzen">🪙 <b data-coins>${p.coins}</b></span></div></header>
-    <div class="scene meadow-scene" data-scene>${meadow()}
-      <div class="stage-actors"><div class="st-lina">${lina()}</div><div class="st-fips">${fips({ hat: p.cosmetic })}</div><div class="st-hoppel">${hoppel()}</div>
+      <div class="hud"><span title="Möhren">🥕 <b data-got>0</b>/${GOAL}</span><span title="Münzen">💰 <b data-coins>${p.coins}</b></span></div></header>
+    <div class="scene meadow-scene${painted() ? " gemalt" : ""}" data-scene>${painted() ? `<img class="meadow-img" src="assets/scenes/gemuesegarten.webp" alt="Bäuerin Hoppes Gemüsegarten mit Beeten und Trecker" draggable="false">` : meadow()}
+      <div class="stage-actors"><div class="st-lina">${painted() ? spriteImg(p.hero === "ben" ? "ben" : "lina") : lina()}</div><div class="st-fips">${painted() ? spriteImg("fips") : fips({ hat: p.cosmetic })}</div><div class="st-hoppel">${bunny()}</div>
       <div class="basket" aria-label="Korb"><div class="basket-carrots" data-basket></div><svg viewBox="0 0 120 70" aria-hidden="true"><path d="M8 18 L112 18 L100 66 L20 66 Z" fill="#c8915a" stroke="#3a2416" stroke-width="4" stroke-linejoin="round"/><path d="M14 34 L106 34 M18 50 L102 50" stroke="#8a5a33" stroke-width="3"/></svg></div></div>
     </div>
     <div class="adv-panel" data-panel></div>
@@ -44,7 +47,7 @@ export async function run(main, { go, onBadges }) {
       <div class="bp-head"><span class="chip">Möhre ${got + 1} von ${GOAL}</span><b data-q></b></div>
       <div class="numline" data-line style="--n:11">
         <svg class="arcs" data-arcs viewBox="0 0 1100 80" preserveAspectRatio="none" aria-hidden="true"></svg>
-        <div class="bunny" data-bunny>${hoppel()}</div>
+        <div class="bunny" data-bunny>${bunny()}</div>
         ${stones.map((n) => `<button class="stone${n === h.start ? " start" : ""}${h.kind === "how" && n === h.target ? " carrot-mark" : ""}" data-n="${n}" aria-label="Stein ${n}"><span>${n}</span></button>`).join("")}
       </div>
       ${h.kind === "how" ? `<div class="choices" data-how>${[...new Set([h.k - 1, h.k, h.k + 1, h.k + 2].filter((x) => x > 0))].slice(0, 3).sort((a, b) => a - b).map((n) => `<button class="btn choice" data-k="${n}">${jumps(n)}</button>`).join("")}</div>` : ""}

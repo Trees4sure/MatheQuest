@@ -65,7 +65,7 @@ export function run(root,{go,onBadges},roomId){
     return `<label class="rm-answer-label">Deine Antwort <input data-answer type="text" inputmode="${task.type==='time'?'text':task.type==='decimal'?'decimal':'numeric'}" autocomplete="off" spellcheck="false" aria-label="Antwort zur Aufgabe" placeholder="${task.type==='time'?'z. B. 14:30':task.type==='decimal'?'z. B. 3,75':'Zahl'}"></label>`;}
   function showMission(){
     const m=p.rooms[roomId]._mission;
-    q('[data-mission]').innerHTML=`<h4>${mission.symbol} ${esc(mission.name)}</h4><p><b>${esc(mission.actor)}:</b> ${esc(m.done?mission.finished:mission.goal)}</p><div class="rm-milestones" role="img" aria-label="${Math.min(5,m.count)} von 5 Aufgaben zum Dorfauftrag">${Array.from({length:5},(_,i)=>`<span class="${i<m.count?'complete':''}">${i<m.count?'✓':'·'}</span>`).join('')}</div>${m.done?'<small>Auftrag erledigt · Neue Aufgaben bleiben spielbar.</small>':''}`;
+    q('[data-mission]').innerHTML=`<h4>${mission.symbol} ${esc(mission.name)}</h4><p><b>${esc(mission.actor)}:</b> ${esc(m.done?mission.finished:mission.goal)}</p><div class="rm-milestones" role="img" aria-label="${Math.min(5,m.count)} von 5 Aufgaben zum Dorfauftrag">${Array.from({length:5},(_,i)=>`<span class="${i<m.count?'complete':''}">${i<m.count?'✓':i+1}</span>`).join('')}</div>${m.done?'<small>Auftrag erledigt · Neue Aufgaben bleiben spielbar.</small>':''}`;
   }
   function newTask(){const act=room.actions.find(a=>a[0]===action);if(!act)return;
     // Zunächst die Kompetenz der thematisch passenden Aufgabe lesen.

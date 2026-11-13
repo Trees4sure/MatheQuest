@@ -17,6 +17,8 @@ import * as rooms from "./lernorte.js";
 import * as explore from "./questworld.js";
 import * as journey from "./journey.js";
 import * as klasse7 from "./klasse7.js";
+import * as share from "./share.js";
+import "./install.js";
 import { ROOMS } from "./lernorte-logic.js";
 
 const main = $("#app");
@@ -49,6 +51,7 @@ async function route() {
     case "reise": return journey.run(main, { go, onBadges }, arg);
     case "dorffest": return journey.finale(main, { go });
     case "hilfe": return journey.help(main);
+    case "teilen": return share.run(main);
     case "training": return screenMap();
     case "new": return screenNew();
     case "profiles": return screenProfiles();
@@ -73,7 +76,7 @@ async function route() {
     case "explore": return explore.run(main, { go, onBadges }, arg);
     case "klasse7": return klasse7.run(main, { go, onBadges });
     case "ranking": return screenRanking();
-    case "fest": return screenFinale();
+    case "fest": return go("#/dorffest"); // früher ein zweites Dorffest für Trainings-Stempel – es gibt nur noch eines
     case "collection": return screenCollection();
     case "adults": return screenAdults();
     default: return journey.home(main, { go });
@@ -87,7 +90,7 @@ function topbar() {
   return `<header class="topbar">
     <button class="who" data-go="#/profiles" aria-label="Kind wechseln"><span class="ava">${p.avatar}</span><span class="who-txt"><b>${esc(p.name)}</b><small>${li.rank.emoji} ${li.rank.title}</small></span></button>
     <div class="xp" title="Erfahrung"><div class="xp-l">Lv ${li.level}</div><div class="xp-bar"><div style="width:${(li.into / li.need) * 100}%"></div></div></div>
-    <div class="hud"><span title="Sticker">🌟 ${p.shards}</span><span title="Münzen">🪙 ${p.coins}</span></div>
+    <div class="hud"><span title="Münzen">💰 ${p.coins}</span></div>
   </header>`;
 }
 main.addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) { sound("tap"); go(g.dataset.go); } });
@@ -155,7 +158,7 @@ function screenMap() {
       const stars = store.worldStars(w), max = w.topics.length * 3, home = w.grade === p.grade, roomDone = !!p.rooms?.[w.id]?._mission?.done;
       return `<button class="region${home ? " home" : ""}${p.bosses[w.id] ? " cleared" : ""}" data-go="#/region/${w.id}" style="--c:${w.color};--i:${i}">
         <span class="r-emo">${w.emoji}</span><span class="r-txt"><b>${esc(w.name)}</b><small>Schwerpunkt Klasse ${w.grade}</small>
-        <span class="r-stars">⭐ ${stars}/${max}${p.bosses[w.id] ? " · 🪪 Stempel" : ""}${roomDone ? " · ✓ Dorfauftrag" : ""}</span></span>${home ? `<span class="r-you">${p.avatar} Hier bist du</span>` : ""}</button>`;
+        <span class="r-stars">⭐ ${stars}/${max}${p.bosses[w.id] ? " · 🏆 Wettstreit gewonnen" : ""}${roomDone ? " · ✓ Dorfauftrag" : ""}</span></span>${home ? `<span class="r-you">${p.avatar} Hier bist du</span>` : ""}</button>`;
     }).join("")}</div>
     <footer class="foot">Offline spielbar · Keine Anmeldung · Keine Werbung · Kein Tracking<br><button class="ghost small" data-go="#/adults">👪 Für Erwachsene</button></footer>
   </section>`;
@@ -185,7 +188,7 @@ function screenRegion(w) {
     <h2>🏆 Rechen-Wettstreit</h2>
     <div class="duel-card">${store.bossReady(w)
       ? `<button class="btn big duel-btn" data-go="#/duel/${w.id}">${w.boss.emoji} Gegen ${esc(w.boss.name)} antreten${p.bosses[w.id] ? " (nochmal)" : ""}</button>`
-      : `<p>${w.boss.emoji} <b>${esc(w.boss.name)}</b> wartet auf einen Rechen-Wettstreit. Hol dir in der Hälfte der Trainings einen Stern, dann geht's los. Wer gewinnt, bekommt den Stempel für den Dorfpass.</p>`}</div>
+      : `<p>${w.boss.emoji} <b>${esc(w.boss.name)}</b> wartet auf einen Rechen-Wettstreit. Hol dir in der Hälfte der Trainings einen Stern, dann geht's los. Wer gewinnt, bekommt einen Pokal in der Sammlung.</p>`}</div>
     ${due ? `<button class="quick-btn" data-go="#/review">🔁 ${due} Thema${due > 1 ? "en" : ""} wiederholen</button>` : ""}
   </section>`;
 }
@@ -201,16 +204,15 @@ function screenRanking(){
 
 function screenCollection() {
   const p = store.current();
-  main.innerHTML = `${topbar()}<section class="screen">
+  main.innerHTML = `${topbar()}${journey.nav("collection")}<section class="screen">
     <div class="banner plain"><button class="ghost back" data-go="#/map" aria-label="Zurück">←</button><h1>🎒 Deine Sammlung</h1></div>
-    <h2>Deine Abenteuer-Stempel</h2><div class="v-stamps">${[1,2,3,4,5,6].map(i=>`<span class="journey-stamp ${p.campaign?.chapters?.["w"+i]?.completed?"earned":""}">${p.campaign?.chapters?.["w"+i]?.completed?"✓":i}</span>`).join("")}</div>${[1,2,3,4,5,6].every(i=>p.campaign?.chapters?.["w"+i]?.completed)?`<button class="btn" data-go="#/dorffest">Zum Dorffest und zur Urkunde</button>`:""}<h2>🪪 Deine Trainings-Stempel</h2>
+    <h2>Dein Dorfpass</h2><p class="muted">Für jeden Ort, an dem du fünf Aufträge erledigst, gibt es einen Stempel. Mit sechs Stempeln beginnt das Dorffest.</p><div class="v-stamps">${[1,2,3,4,5,6].map(i=>`<span class="journey-stamp ${p.campaign?.chapters?.["w"+i]?.completed?"earned":""}">${p.campaign?.chapters?.["w"+i]?.completed?"✓":i}</span>`).join("")}</div>${[1,2,3,4,5,6].every(i=>p.campaign?.chapters?.["w"+i]?.completed)?`<button class="btn" data-go="#/dorffest">Zum Dorffest und zur Urkunde</button>`:""}<h2>🏆 Gewonnene Rechen-Wettstreite</h2>
     <div class="crystals">${WORLDS.map((w) => `<div class="crystal stamp${p.bosses[w.id] ? " have" : ""}" style="--c:${w.color}" title="${esc(w.name)}"><span class="stamp-emo">${w.emoji}</span><small>${esc(w.name)}</small></div>`).join("")}</div>
-    <p class="muted">Gewinne den Rechen-Wettstreit an jedem Ort – mit allen 6 Stempeln bist du Ehrengast beim Dorffest! · Sticker im Album: ${p.shards} ${sticker(20)}</p>
-    ${WORLDS.every(w=>p.bosses[w.id]) ? `<button class="btn big" data-go="#/fest">🎉 Dorffest eröffnen · Deine Urkunde</button>` : `<p class="muted">Noch ${WORLDS.filter(w=>!p.bosses[w.id]).length} Stempel bis zur Dorffest-Urkunde.</p>`}
+    <p class="muted">Die Rechen-Wettstreite sind eine Extra-Herausforderung. Du findest sie unter „Üben“ an jedem Ort. · Sticker im Album: ${p.shards} ${sticker(20)}</p>
     <h2>🐕 Fips' Sachen</h2>
     <div class="wardrobe"><div class="ward-fips">${fips({ hat: p.cosmetic })}</div><div class="ward-items">${Object.entries(COSMETICS).map(([id, c]) => {
       const own = p.owned.includes(id), price = SHOP[id];
-      return `<button class="ward-item${p.cosmetic === id ? " on" : ""}${own ? "" : " locked"}" data-cos="${id}">${c.emoji || "🚫"}<small>${esc(c.name)}</small>${own ? "" : price ? `<b>${price} 🪙</b>` : "<b>🔒 Abenteuer</b>"}</button>`;
+      return `<button class="ward-item${p.cosmetic === id ? " on" : ""}${own ? "" : " locked"}" data-cos="${id}">${c.emoji || "🚫"}<small>${esc(c.name)}</small>${own ? "" : price ? `<b>${price} 💰</b>` : "<b>🔒 Abenteuer</b>"}</button>`;
     }).join("")}</div></div>
     <h2>🏅 Abzeichen</h2>
     <div class="badges">${BADGES.map((b) => `<div class="badge${p.badges[b.id] ? " have" : ""}"><span>${b.emoji}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>`).join("")}</div>
@@ -220,23 +222,10 @@ function screenCollection() {
     const id = b.dataset.cos;
     if (p.owned.includes(id)) { store.updateProfile({ cosmetic: id }); sound("tap"); return screenCollection(); }
     const price = SHOP[id]; if (!price) return toast("🔒 Das gibt es in einem Abenteuer!");
-    if (p.coins < price) return toast(`Dir fehlen noch ${price - p.coins} 🪙`);
-    if (armed !== id) { armed = id; return toast(`Nochmal tippen zum Kaufen (${price} 🪙)`); }
+    if (p.coins < price) return toast(`Dir fehlen noch ${price - p.coins} 💰`);
+    if (armed !== id) { armed = id; return toast(`Nochmal tippen zum Kaufen (${price} 💰)`); }
     store.updateProfile({ coins: p.coins - price, cosmetic: id }); store.unlockCosmetic(id); sound("win"); confetti(); screenCollection();
   }));
-}
-
-// ---------------- Dorffest-Finale nach sechs Stempeln ----------------
-function screenFinale(){
-  const p=store.current();
-  if(!WORLDS.every(w=>p.bosses[w.id])) return go("#/collection");
-  main.innerHTML = `${topbar()}<section class="screen finale-screen">
-    <div class="finale-image"><img src="assets/scenes/dorffest.webp" alt="Feststände und Dorfplatz Rechenbach"></div>
-    <div class="finale-certificate"><p class="cert-top">DORF RECHENBACH · DORFPASS</p><h1>Urkunde</h1><div class="cert-stamps">${WORLDS.map(w=>`<span title="${esc(w.name)}">${w.emoji}</span>`).join("")}</div><p>Du hast an allen sechs Orten mitgerechnet und die Rechen-Wettstreite gewonnen.</p><h2>${esc(p.name)}</h2><p>ist Ehrengast beim Dorffest!</p><p class="cert-bottom">Lina, Fips und das ganze Dorf freuen sich mit dir.</p></div>
-    <div class="row-actions"><button class="btn big" data-print>Urkunde drucken</button><button class="btn ghost" data-go="#/map">Wieder ins Dorf</button></div>
-    <p>Alle Lernorte bleiben geöffnet. Du kannst jederzeit neue Aufgaben lösen und deine Stufen verbessern.</p>
-  </section>`;
-  main.querySelector("[data-print]").onclick=()=>window.print();
 }
 
 // ---------------- Erwachsenenbereich ----------------

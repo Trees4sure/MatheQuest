@@ -19,12 +19,12 @@ const TOPICS = {
       { max: 20, min: 10, ops: ["+"], cross: "no" }, { max: 20, min: 10, ops: ["+", "-"], cross: "no" }, { max: 20, ops: ["+"], cross: "yes", bMax: 9 },
       { max: 20, ops: ["-"], cross: "yes", bMax: 9 }, { max: 20, ops: ["+", "-"], missing: true }]),
     T("k1-neighbors", "Nachbarzahlen", "🏠", "neighbors", [{ max: 10 }, { max: 20 }, { max: 20 }, { max: 50 }, { max: 100 }]),
-    T("k1-double", "Verdoppeln & Halbieren", "🪞", "doubleHalf", [{ max: 5 }, { max: 10 }, { max: 10 }, { max: 15 }, { max: 20 }]),
+    T("k1-double", "Verdoppeln & Halbieren", "✌️", "doubleHalf", [{ max: 5 }, { max: 10 }, { max: 10 }, { max: 15 }, { max: 20 }]),
     T("k1-pattern", "Zahlen-Muster", "🕵️", "sequence", [{ max: 10, steps: [1] }, { max: 20, steps: [1, 2] }, { max: 20, steps: [2, 3] }, { max: 20, steps: [2, 3, 5] }, { max: 30, steps: [2, 3, 4, 5] }]),
     T("k1-word", "Rechengeschichten", "📖", "wordProblem", Array(5).fill({ grade: 1 })),
   ],
   w2: [
-    T("k2-plus100", "Plus & Minus bis 100", "🪙", "addSub", [
+    T("k2-plus100", "Plus & Minus bis 100", "💰", "addSub", [
       { max: 100, ops: ["+", "-"], step: 10 }, { max: 100, ops: ["+", "-"], bMax: 9, cross: "no" }, { max: 100, ops: ["+", "-"], bMax: 9, cross: "yes" },
       { max: 100, ops: ["+", "-"], min: 10 }, { max: 100, ops: ["+", "-"], min: 10, missing: true }]),
     T("k2-times", "Einmaleins-Start", "✖️", "times", [
@@ -41,7 +41,7 @@ const TOPICS = {
   w3: [
     T("k3-place", "Stellenwerte bis 1000", "🧱", "placeValue", [
       { digits: 3, modes: ["compose"] }, { digits: 3, modes: ["digit"] }, { digits: 3, modes: ["compose", "digit"] }, { digits: 3, modes: ["count"] }, { digits: 4, modes: ["compose", "digit", "count"] }]),
-    T("k3-plus1000", "Plus & Minus bis 1000", "🪜", "addSub", [
+    T("k3-plus1000", "Plus & Minus bis 1000", "📈", "addSub", [
       { max: 1000, ops: ["+", "-"], step: 100 }, { max: 1000, ops: ["+", "-"], step: 10 }, { max: 1000, ops: ["+", "-"], bMax: 99, min: 100 },
       { max: 1000, ops: ["+", "-"], min: 100 }, { max: 1000, ops: ["+", "-"], min: 100, missing: true }]),
     T("k3-1x1", "Einmaleins-Profi", "🏅", "times", [
@@ -67,7 +67,7 @@ const TOPICS = {
     T("k4-mult", "Malnehmen", "⛏️", "mulBig", [
       { aMin: 100, aMax: 900, step: 100, bMin: 2, bMax: 9 }, { aMin: 11, aMax: 99, bMin: 3, bMax: 9 }, { aMin: 101, aMax: 999, bMin: 2, bMax: 9 },
       { aMin: 11, aMax: 99, bMin: 11, bMax: 30 }, { aMin: 101, aMax: 999, bMin: 11, bMax: 40 }]),
-    T("k4-div", "Dividieren", "🪓", "divBig", [
+    T("k4-div", "Dividieren", "✂️", "divBig", [
       { dMin: 2, dMax: 5, qMin: 10, qMax: 50 }, { dMin: 2, dMax: 9, qMin: 11, qMax: 99 }, { dMin: 3, dMax: 9, qMin: 100, qMax: 999 },
       { dMin: 10, dMax: 20, qMin: 10, qMax: 99 }, { dMin: 11, dMax: 50, qMin: 20, qMax: 300 }]),
     T("k4-units", "Größen-Profi", "⚖️", "units", [

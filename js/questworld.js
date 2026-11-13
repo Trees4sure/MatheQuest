@@ -1,4 +1,5 @@
 // MatheQuest: begehbare, wiederbesuchbare Lernwelten. Alle Aktionen bleiben lokal/offline.
+import {gangHtml,walk} from './gang.js';
 import * as store from './store.js';
 import { ROOMS, createTask, isCorrect } from './lernorte-logic.js';
 import { update, rec } from './competence.js';
@@ -6,9 +7,9 @@ import { esc, toast } from './ui.js';
 import { sound } from './fx.js';
 
 const ICONS = {
-  w1:['🥚','🥕','🪨','🌷','⚖️'], w2:['🥨','🧺','🪙','🕰️','⚖️'],
+  w1:['🥚','🥕','👣','🌷','⚖️'], w2:['🥨','🧺','💰','🕰️','⚖️'],
   w3:['💺','🕒','🧳','📊','🎫'], w4:['💧','📏','📊','📐','🏠'],
-  w5:['🪵','🧱','🪚','📝','🌡️'],w6:['🥧','🏷️','💶','🧮','📦']
+  w5:['🌳','🧱','📏','📝','🌡️'],w6:['🥧','🏷️','💶','🧮','📦']
 };
 const POSITIONS = [
   {x:17,y:54}, {x:33,y:45}, {x:51,y:39}, {x:69,y:48}, {x:85,y:56}
@@ -38,14 +39,12 @@ export function run(root,{go,onBadges},roomId){
   const qa=s=>root.querySelector(s);
   const source=`assets/scenes/erkundung-${roomId}.webp`;
   const hero=p.hero==='ben'?'ben':'lina';
-  const heroIdle=`assets/chars/${hero}-froh.webp`, heroWalking=hero==='lina'?'assets/chars/lina-lauf.webp':heroIdle;
-  const dogIdle='assets/chars/fips-froh.webp',dogWalking='assets/chars/fips-lauf.webp';
   root.innerHTML=`<section class="ex-screen"><header class="ex-header"><button class="ghost" data-ex-back>← Zurück</button><h1>${room.emoji} ${esc(room.name)}</h1><span class="ex-score">⭐ ${p.xp} Punkte</span></header>
    <p class="ex-lead">Bewege deine Figur: Tippe auf den Weg oder nutze ← und →. Suche die fünf Stellen im Bild. Jede Stelle bietet immer wieder neue Aufgaben.</p>
    <div class="ex-stage" tabindex="0" aria-label="Erkundbare Dorfwelt. Pfeiltasten bewegen deine Figur.">
       <img class="ex-backdrop" src="${source}" alt="Gemalte Spiellandschaft: ${esc(room.name)}">
-      <div class="ex-player" style="left:${x}%"><img src="assets/chars/${hero}-froh.webp" alt="${hero==='ben'?'Ben':'Lina'}" draggable="false"><span class="ex-shadow"></span></div>
-      <img class="ex-dog" src="assets/chars/fips-froh.webp" alt="Fips begleitet dich" draggable="false" style="left:${x-6}%">
+      <div class="ex-player" style="left:${x}%"><img src="assets/chars/${hero}-froh.webp" alt="${hero==='ben'?'Ben':'Lina'}" draggable="false">${gangHtml(hero)}<span class="ex-shadow"></span></div>
+      <div class="ex-dog" style="left:${x-6}%"><img src="assets/chars/fips-froh.webp" alt="Fips begleitet dich" draggable="false">${gangHtml('fips')}</div>
       ${room.actions.map((a,i)=>`<button class="ex-hunt ${history.found[a[0]]?'found':''}" style="left:${POSITIONS[i].x}%;top:${POSITIONS[i].y}%" data-hunt="${i}" aria-label="${esc(a[1])}" title="${esc(a[1])}"><span>${(ICONS[roomId]||ICONS.w1)[i]}</span><small>${history.found[a[0]]?'✓':'?'}</small></button>`).join('')}
    </div>
    <div class="ex-controls"><button type="button" data-left aria-label="Nach links gehen">◀ Links</button><span>Erkunden · <strong data-found>${Object.keys(history.found).length}/5</strong> Fundstellen entdeckt</span><button type="button" data-right aria-label="Nach rechts gehen">Rechts ▶</button></div>
@@ -54,8 +53,10 @@ export function run(root,{go,onBadges},roomId){
    <p class="ex-footer">Du kannst alle Fundstellen erneut besuchen. Fehler sind erlaubt, und Hilfen kosten keine Punkte. <button class="ghost" data-go-back>Zur Dorfkarte</button></p>
  </section>`;
   const stage=qa('.ex-stage'),avatar=qa('.ex-player'),dog=qa('.ex-dog'),panel=qa('[data-panel]');
-  function setPos(n){x=Math.min(91,Math.max(9,n)); avatar.style.left=x+'%';dog.style.left=(x-6)+'%';}
-  function move(n,callback){if(pendingTimer)clearTimeout(pendingTimer);walkBusy=true; const distance=Math.abs(n-x); avatar.classList.add('walking');dog.classList.add('walking');if(!store.settings().reducedMotion){avatar.querySelector('img').src=heroWalking;dog.src=dogWalking;}setPos(n); pendingTimer=setTimeout(()=>{walkBusy=false;avatar.classList.remove('walking');dog.classList.remove('walking');avatar.querySelector('img').src=heroIdle;dog.src=dogIdle;callback?.();pendingTimer=null;},Math.min(900,250+distance*13));}
+  let faceLeft=false; // Fips läuft immer hinter der Figur her
+  function setPos(n){x=Math.min(91,Math.max(9,n)); avatar.style.left=x+'%';dog.style.left=(x+(faceLeft?6:-6))+'%';}
+  function move(n,callback){if(pendingTimer)clearTimeout(pendingTimer);walkBusy=true; const distance=Math.abs(n-x); avatar.classList.add('walking');dog.classList.add('walking');// Gehzeit und Schrittzyklus hängen an derselben Dauer – sonst gleitet die Figur.
+    const ms=Math.round(Math.min(1600,Math.max(distance>0.5?700:0,320+distance*30))); /* mindestens ein ganzer Schrittzyklus */if(distance>0.5)faceLeft=n<x;avatar.style.transitionDuration=dog.style.transitionDuration=ms+'ms';walk(avatar,true,faceLeft);walk(dog,true,faceLeft);setPos(n); pendingTimer=setTimeout(()=>{walkBusy=false;avatar.classList.remove('walking');dog.classList.remove('walking');walk(avatar,false);walk(dog,false);callback?.();pendingTimer=null;},ms);}
   function find(i){const [id]=room.actions[i];history.found[id]=true;store.save();const h=qa(`[data-hunt="${i}"]`);h?.classList.add('found'); if(h)h.querySelector('small').textContent='✓';qa('[data-found]').textContent=Object.keys(history.found).length+'/5';}
   function showTask(i){const a=room.actions[i];opened=i;find(i);let t;const r=rec(p,createTask(roomId==='wald'?'w1':roomId,a[0],1).skill);for(let k=0;k<8;k++){t=createTask(roomId==='wald'?'w1':roomId,a[0],r.level);if(t.question!==lastQ)break;}task=t;lastQ=t.question;attempts=0;hintUsed=0;finished=false;panel.hidden=false;qa('[data-title]').textContent=a[2]+' '+a[1];qa('[data-question]').textContent=t.question;qa('[data-visual]').innerHTML=miniVis(t);const input=qa('[data-answer]');input.value='';input.disabled=false;input.inputMode=['compare','time'].includes(t.type)?'text':'decimal';input.placeholder=t.type==='time'?'z. B. 14:30':t.type==='compare'?'<, = oder >':t.type==='coins'?'in Cent':'Zahl oder Bruch';qa('[data-feedback]').textContent='';qa('[data-explanation]').hidden=true;qa('[data-check]').hidden=false;qa('[data-next]').hidden=true;panel.scrollIntoView({behavior:store.settings().reducedMotion?'auto':'smooth',block:'nearest'});input.focus({preventScroll:true});}
   function answer(){if(finished||!task)return;const val=qa('[data-answer]').value.trim();if(!val){qa('[data-feedback]').textContent='Gib eine Antwort ein.';return;}attempts++;
@@ -68,8 +69,8 @@ export function run(root,{go,onBadges},roomId){
   function reveal(){if(!task||finished)return;finished=true;qa('[data-feedback]').textContent='Hier ist ein Lösungsweg. Du kannst gleich mit neuen Zahlen weiterüben – ohne Punktabzug.';qa('[data-explanation]').textContent=task.explanation;qa('[data-explanation]').hidden=false;qa('[data-check]').hidden=true;qa('[data-next]').hidden=false;qa('[data-answer]').disabled=true;}
   root.addEventListener('click',e=>{const b=e.target.closest('button');if(b){
    if(b.hasAttribute('data-ex-back')||b.hasAttribute('data-go-back'))return go(`#/region/${roomId==='wald'?'w1':roomId}`);
-   if(b.hasAttribute('data-left'))return move(x-9);
-   if(b.hasAttribute('data-right'))return move(x+9);
+   if(b.hasAttribute('data-left'))return move(x-14);
+   if(b.hasAttribute('data-right'))return move(x+14);
    if(b.hasAttribute('data-close')){panel.hidden=true;stage.focus();return;}
    if(b.dataset.hunt!==undefined||b.dataset.action!==undefined){const i=Number(b.dataset.hunt??b.dataset.action);move(POSITIONS[i].x,()=>showTask(i));return;}
    if(b.hasAttribute('data-check'))return answer();
