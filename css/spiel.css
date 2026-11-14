@@ -1,0 +1,351 @@
+/* MatheQuest v7.7 – Spieloberfläche (Stufe C5 + „mehr Spiel, weniger Webseite“).
+   Holz, Pergament, Goldrand, dicke Knöpfe mit Tiefe. Wird nach allen anderen Stilen geladen.
+   Bereiche: Spielanzeige (Haus/Rucksack), Startbildschirm als Spielwelt, Auftragsbildschirm, neue Mitmach-Formen,
+   Zahlenschloss, Feststand. Alle Tippflächen ab 44 px (siehe kind.css). */
+:root{--wood:#8b5a2b;--wood-l:#b07a43;--wood-d:#5e3b1a;--wood-dd:#3b250f;--paper:#fffaf0;--paper2:#f6e6bf;
+ --gold:#ffd25e;--orange:#f07b1a;--orange-d:#7a3a08;--leaf:#4f9a2a;--leaf-d:#2f6d1f;--berry:#e2553f}
+
+/* ---------- Spielanzeige: Haus links, Rucksack rechts ---------- */
+.g-round{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;padding:0;font:700 28px system-ui,sans-serif;line-height:1;
+ color:var(--wood-d);background:radial-gradient(circle at 35% 30%,#fffaf0,#f3d9a0);border:3px solid #fff;
+ box-shadow:0 0 0 3px var(--wood-d),0 5px 0 3px var(--wood-dd),0 10px 16px #0004;transition:transform .1s}
+.g-round:active{transform:translateY(3px)}
+#hud .g-round{position:fixed;top:calc(10px + env(safe-area-inset-top));z-index:45}
+#hud .g-house{left:12px;font-size:34px}#hud .g-house span{transform:translateY(-2px)}
+#hud .g-bag{right:12px}
+.g-round.small{width:44px;height:44px;font-size:18px;box-shadow:0 0 0 2px var(--wood-d),0 3px 0 2px var(--wood-dd)}
+body.hud-sub #app{padding-top:72px}
+/* Alte „Zurück zur Karte“-Knöpfe sind überflüssig, das Haus steht immer oben links. */
+body.hud-sub #app .ghost.back[data-go="#/map"],body.hud-sub #app>section>.ghost[data-go="#/map"]:first-child{display:none}
+body.hud-sub .topbar{position:relative;top:auto}
+
+/* Rucksack */
+.g-sheet-back{position:fixed;inset:0;z-index:95;background:#1b120899;display:flex;align-items:flex-end;justify-content:center;animation:g-fade .2s}
+.g-sheet{width:min(560px,100%);max-height:88svh;overflow:auto;background:linear-gradient(var(--paper),var(--paper2));border:4px solid var(--wood-d);border-bottom:0;
+ border-radius:26px 26px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px #0006;animation:g-up .25s ease-out;color:#2c2a22}
+.g-sheet-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.g-sheet-head h2{flex:1;margin:0;font:900 25px var(--head);color:var(--wood-d)}
+.g-sheet-icon{font-size:36px}
+.g-sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.g-tile{min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:#fff;border:3px solid #d8c08a;border-radius:16px;
+ box-shadow:0 4px 0 #b08850;font:800 13px var(--head);color:#3b2a14;padding:6px}
+.g-tile span{font-size:32px;line-height:1}
+.g-tile:active{transform:translateY(3px);box-shadow:0 1px 0 #b08850}
+.g-sheet-foot{margin-top:14px;display:flex;justify-content:center}
+@keyframes g-up{from{transform:translateY(40%)}}@keyframes g-fade{from{opacity:0}}
+
+/* ---------- Startbildschirm als Spielwelt ---------- */
+body.hud-home{background:#3f6b2a}
+.g-home{position:relative;color:#2c2a22}
+.g-world{position:relative;height:calc(100svh - 74px - env(safe-area-inset-bottom));min-height:470px;overflow:hidden;background:#5d7f3f}
+.g-blur{position:absolute;inset:-40px;background:url(../assets/scenes/rechenbach-karte.webp) center/cover;filter:blur(20px) brightness(.8) saturate(1.1)}
+.g-pan{position:absolute;inset:0;overflow-x:auto;overflow-y:hidden;display:flex;justify-content:safe center;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.g-pan::-webkit-scrollbar{display:none}
+.g-mapbox{position:relative;height:100%;aspect-ratio:1672/941;flex:none}
+.g-mapimg{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.g-world::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;box-shadow:inset 0 0 90px 20px #1d2a1188;background:linear-gradient(#0006,transparent 22%,transparent 70%,#0005)}
+/* Orte: goldene Plakette mit Holzschild */
+.g-pin{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-60%);display:grid;justify-items:center;padding:0;background:none;border:0;z-index:3;min-width:64px}
+.g-pin-medal{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font:900 26px var(--head);color:var(--wood-d);
+ background:radial-gradient(circle at 35% 30%,#fff7d6,#ffd25e 60%,#e3a21a);border:4px solid #fff;box-shadow:0 0 0 3px var(--wood-d),0 6px 0 3px var(--wood-dd),0 12px 18px #0007;transition:transform .15s}
+.g-pin:hover .g-pin-medal,.g-pin:focus-visible .g-pin-medal{transform:scale(1.08)}
+.g-pin.done .g-pin-medal{background:radial-gradient(circle at 35% 30%,#c8f5a8,#5fae3c 60%,#2f6d1f);color:#fff;text-shadow:0 2px 0 #1f4a12}
+.g-pin.next .g-pin-medal{animation:g-bounce 1.6s ease-in-out infinite}
+.g-pin.next::before{content:"";position:absolute;top:-6px;width:70px;height:70px;border-radius:50%;border:4px solid #fff7d6;animation:g-ring 1.6s ease-out infinite;pointer-events:none}
+.g-pin.fog .g-pin-medal{filter:saturate(.35) brightness(1.08);opacity:.85}
+.g-pin-name{margin-top:7px;font:800 14px var(--head);color:#fff;background:linear-gradient(var(--wood-l),#7a4a20);padding:4px 12px;border-radius:8px;border:2px solid #4a2c10;
+ box-shadow:0 3px 0 var(--wood-dd);text-shadow:0 1px 0 var(--wood-dd);white-space:nowrap}
+.g-pin.fog .g-pin-name{opacity:.8}
+.g-pin-bang{position:absolute;top:-16px;right:-6px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:900 18px var(--head);font-style:normal;color:#fff;
+ background:var(--berry);border:3px solid #fff;box-shadow:0 3px 0 #8a2414;animation:g-bounce 1.6s ease-in-out infinite .2s}
+/* Morgennebel über Orten, die noch nicht dran sind */
+.g-fog{position:absolute;left:var(--x);top:var(--y);width:24%;aspect-ratio:1.7;transform:translate(-50%,-55%);z-index:2;pointer-events:none;
+ background:radial-gradient(ellipse at 40% 50%,#fffffff2,#ffffffb0 35%,#ffffff40 58%,transparent 72%);filter:blur(5px);animation:g-drift 9s ease-in-out infinite alternate}
+/* Lina/Ben und Fips stehen am nächsten Ort */
+.g-party{position:absolute;left:calc(var(--x) - 6%);top:var(--y);transform:translate(-50%,-78%);display:flex;align-items:flex-end;gap:0;z-index:3;pointer-events:none;
+ filter:drop-shadow(0 6px 4px #0006)}
+.g-party img:first-child{height:96px}.g-party img:last-child{height:46px;margin-left:-8px}
+/* Anzeige oben: Spielerabzeichen und Zähler */
+.g-top{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;z-index:5;display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 10px;pointer-events:none}
+.g-top>*{pointer-events:auto}
+.g-player{display:flex;align-items:center;background:none;border:0;padding:0;color:#fff;text-align:left}
+.g-medal{position:relative;z-index:1;width:64px;height:64px;border-radius:50%;overflow:hidden;background:radial-gradient(#fff6df,#f3d9a0);border:4px solid var(--gold);
+ box-shadow:0 0 0 3px var(--wood-d),0 5px 0 3px var(--wood-dd)}
+.g-medal img{width:100%;height:150%;object-fit:cover;object-position:50% 0}
+.g-pname{margin-left:-16px;padding:6px 16px 6px 24px;background:linear-gradient(#6b4220,#3e2610);border:2px solid #2a190a;border-radius:0 14px 14px 0;display:flex;flex-direction:column;line-height:1.15;
+ box-shadow:0 4px 0 #2a190a}
+.g-pname b{font:800 18px var(--head)}.g-pname small{font-size:12px;color:#ffe3a0}
+.g-res{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.g-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 12px 3px 3px;background:#2a190ad9;color:#fff;font:800 16px var(--head);border-radius:999px;border:2px solid var(--gold);box-shadow:0 3px 0 #2a190a}
+.g-pill i{width:28px;height:28px;display:grid;place-items:center;background:#fff6df;border-radius:50%;font-style:normal;font-size:15px}
+/* Auftragskarte unten */
+.g-quest{position:absolute;left:12px;right:12px;bottom:12px;max-width:640px;margin:0 auto;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 12px;
+ background:linear-gradient(var(--paper),var(--paper2));border:3px solid var(--wood-d);border-radius:20px;box-shadow:0 6px 0 var(--wood-dd),0 14px 30px #0007}
+.g-quest-por{width:66px;height:66px;flex:none;object-fit:cover;object-position:50% 0;border-radius:14px;background:#e8f1d8;border:3px solid #fff;box-shadow:0 0 0 2px var(--wood-d)}
+.g-quest-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.g-quest-txt small{font-size:11px;font-weight:700;color:#7a5a2a;letter-spacing:.4px}
+.g-quest-txt b{font:800 19px var(--head);color:#2c2a22;line-height:1.15}
+.g-bar{display:block;height:12px;background:#5e3b1a26;border-radius:99px;overflow:hidden;border:2px solid var(--wood-d)}
+.g-bar i{display:block;height:100%;background:linear-gradient(#9be36a,var(--leaf));border-radius:99px}
+.g-go,.g-btn{min-width:98px;min-height:64px;padding:0 14px;font:900 24px var(--head);color:#fff;background:linear-gradient(#ffb547,var(--orange));border:3px solid var(--orange-d);border-radius:18px;
+ box-shadow:0 6px 0 var(--orange-d),inset 0 3px 0 #ffd79a;text-shadow:0 2px 0 var(--orange-d);animation:g-pulse 2.2s ease-in-out infinite}
+.g-go:active,.g-btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--orange-d),inset 0 3px 0 #ffd79a}
+/* Bereich unter der Karte */
+.g-more{padding:22px 14px calc(100px + env(safe-area-inset-bottom));background:linear-gradient(#4f7d35,#36592a);max-width:none}
+.g-more>*{max-width:1100px;margin-left:auto;margin-right:auto}
+.g-h{font:900 26px var(--head);color:#fff;text-shadow:0 3px 0 #22391a;margin:0 auto 12px}
+.g-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.g-card{position:relative;min-height:136px;border-radius:18px;border:3px solid #fff;box-shadow:0 0 0 3px #22391a,0 6px 0 3px #172a10;background:#6e8f4f center/cover;overflow:hidden;
+ display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:10px 12px;color:#fff;text-align:left;transition:transform .12s}
+.g-card::before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,#000b)}
+.g-card b,.g-card small{position:relative;text-shadow:0 2px 3px #000a}.g-card b{font:800 18px var(--head)}.g-card small{font-size:13px}
+.g-card:active{transform:translateY(3px)}
+.g-card-ico{position:absolute;top:8px;left:8px;width:42px;height:42px;background:#fff6df;border-radius:50%;display:grid;place-items:center;font-size:22px;box-shadow:0 3px 0 var(--wood-d);z-index:1}
+.g-pass{margin-top:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 16px;background:var(--paper);border:3px solid var(--wood-d);border-radius:18px;box-shadow:0 5px 0 var(--wood-dd)}
+.g-pass small{font:800 11px var(--head);letter-spacing:1px;color:#7a5a2a}.g-pass b{display:block;font:800 18px var(--head)}
+.g-more .v-apps{margin-top:18px}
+.g-foot{color:#e8f5d8;font-size:12px;text-align:center;margin-top:18px}.g-foot a{color:#fff}
+/* Spielleiste */
+.g-dock{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+ background:linear-gradient(#6b4220,#45290f);border-top:3px solid var(--gold);box-shadow:0 -6px 20px #0005}
+.g-dock button{flex:1;max-width:130px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:#ffe9b8;font:800 12px var(--head);min-height:60px;letter-spacing:.3px;border-radius:14px}
+.g-dock button span{font-size:29px;line-height:1;filter:drop-shadow(0 2px 0 #2a190a);transition:transform .12s}
+.g-dock button:active span{transform:scale(.9)}
+@media(min-width:900px){.g-pin-medal{width:66px;height:66px;font-size:30px}.g-pin-name{font-size:16px}.g-party img:first-child{height:120px}.g-party img:last-child{height:56px}.g-quest{bottom:18px}}
+@media(max-width:420px){.g-quest-por{width:54px;height:54px}.g-quest-txt b{font-size:17px}.g-go{min-width:82px;font-size:21px}.g-pill{font-size:14px}}
+
+/* ---------- Auftragsbildschirm ---------- */
+.hud-sub .j-shell{margin-top:-62px;max-width:1180px;margin-left:auto;margin-right:auto}
+.j-header{justify-content:center;text-align:center;margin:0 66px 14px;min-height:54px;gap:8px;flex-wrap:wrap}
+.j-header>div{background:linear-gradient(var(--wood-l),#7a4a20);padding:5px 22px 7px;border-radius:12px;border:3px solid #4a2c10;box-shadow:0 4px 0 var(--wood-dd)}
+.j-header h1{color:#fff;font:900 22px var(--head);text-shadow:0 2px 0 var(--wood-dd);margin:0}
+.j-header small{color:#ffe3a0;letter-spacing:1px}
+.j-xp{display:inline-flex;align-items:center;padding:4px 12px;background:#2a190ad9;color:#fff;font:800 14px var(--head);border-radius:999px;border:2px solid var(--gold)}
+.j-stage{border:5px solid #fff;box-shadow:0 0 0 4px var(--wood-d),0 8px 0 4px var(--wood-dd),0 16px 30px #0003}
+.j-task{background:linear-gradient(var(--paper),#fbefcf);border:3px solid var(--wood-d);border-radius:22px;box-shadow:0 6px 0 var(--wood-dd),0 14px 30px #0002}
+.j-task h2{font-family:var(--head);font-weight:900;color:var(--wood-d)}
+.j-task-top .v-eyebrow{background:var(--wood-d);color:#ffe3a0;padding:3px 10px;border-radius:99px}
+.j-task .v-primary,.f-actions .v-primary,.s-actions .v-primary,.j-complete .v-primary{background:linear-gradient(#ffb547,var(--orange));border:3px solid var(--orange-d);color:#fff;border-radius:16px;
+ box-shadow:0 5px 0 var(--orange-d),inset 0 3px 0 #ffd79a;text-shadow:0 2px 0 var(--orange-d);font-family:var(--head);font-weight:900;font-size:20px;min-height:54px}
+.j-task .v-primary:active,.f-actions .v-primary:active,.s-actions .v-primary:active{transform:translateY(4px);box-shadow:0 1px 0 var(--orange-d)}
+.j-task .ghost,.f-actions .ghost,.s-actions .ghost{background:#fff6df;border:2px solid #b08850;box-shadow:0 3px 0 #b08850;color:#5e3b1a;border-radius:12px}
+.j-story{background:#fffdf5;border:2px solid #e3d3a8;border-radius:6px;box-shadow:0 6px 14px #0002;position:relative;transform:rotate(-.5deg);padding-top:26px}
+.j-story::before{content:"";position:absolute;top:-10px;left:50%;width:90px;height:24px;transform:translateX(-50%) rotate(2deg);background:#f4e19ccc;box-shadow:0 1px 2px #0002}
+.j-story h2{font-family:var(--head);color:var(--wood-d)}
+.j-options button,.j-stone,.j-bag,.j-cell{box-shadow:0 4px 0 #b08850}
+.j-options button[aria-pressed="true"]{box-shadow:0 4px 0 var(--leaf-d)}
+/* Wegweiser */
+.c-sign{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:24px auto 0}
+.c-sign-post{display:none}
+.c-board{font:800 15px var(--head);color:#fff;background:linear-gradient(var(--wood-l),#7a4a20);border:0;padding:8px 18px;min-height:48px;text-shadow:0 1px 0 var(--wood-dd);border-radius:6px;
+ filter:drop-shadow(0 3px 0 var(--wood-dd))}
+.c-board.l{clip-path:polygon(16px 0,100% 0,100% 100%,16px 100%,0 50%);padding-left:26px}
+.c-board.r{clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%);padding-right:26px}
+.c-board.m{background:linear-gradient(#7aa94f,#4f7d35)}
+
+/* ---------- Neue Mitmach-Formen (Stufe C) ---------- */
+[data-drag]{touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+.dz-ghost{position:fixed!important;left:0;top:0;z-index:90;pointer-events:none;margin:0;opacity:.95;filter:drop-shadow(0 10px 10px #0005)}
+.dragging{opacity:.3}
+.drop-hot{outline:4px dashed var(--orange);outline-offset:3px}
+/* Karton */
+.c-drag{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px;align-items:start;margin:8px 0 4px}
+.c-pile{display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:12px;min-height:80px;background:radial-gradient(ellipse at 50% 25%,#ecd09c,#c99a56);
+ border:4px solid var(--wood);border-radius:18px 18px 46px 46px;box-shadow:inset 0 5px 10px #0003,0 4px 0 var(--wood-d)}
+.c-pile.small{border-radius:16px;margin:4px 0 12px;min-height:56px}
+.c-pile small{color:#5e3b1a;font-weight:700}
+.c-item{width:44px;height:44px;padding:2px;background:none;border:0;display:grid;place-items:center;border-radius:10px}
+.c-item img,.c-slot img{width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 2px 1px #0004)}
+.c-carton{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:10px;background:linear-gradient(#d4b689,#bf9d6c);border:3px solid #8b6a3f;border-radius:14px;
+ box-shadow:inset 0 3px 0 #e8d2ad,0 4px 0 #6d5230}
+.c-slot{aspect-ratio:1;min-height:44px;border-radius:50%;background:radial-gradient(circle at 50% 62%,#7d5e37,#a98657 70%);display:grid;place-items:center;border:0;padding:4px;box-shadow:inset 0 3px 5px #0004}
+.c-slot.on{background:radial-gradient(circle at 50% 62%,#8f6d42,#b8956a 70%);outline:3px solid #fff8;outline-offset:-3px}
+/* Waage */
+.c-scale{position:relative;height:200px;margin:12px auto 6px;max-width:460px}
+.c-beam{position:absolute;left:8%;right:8%;top:46px;height:12px;z-index:2;background:linear-gradient(#d29a55,var(--wood));border:2px solid var(--wood-d);border-radius:6px;
+ transform:rotate(var(--tilt));transition:transform .6s cubic-bezier(.3,1.6,.5,1)}
+.c-pan{position:absolute;top:10px;width:44%;min-height:110px;transform:rotate(calc(-1 * var(--tilt)));transform-origin:50% 0;transition:transform .6s cubic-bezier(.3,1.6,.5,1);
+ display:flex;flex-wrap:wrap-reverse;align-content:flex-start;justify-content:center;gap:3px;padding:6px 6px 18px}
+.c-pan.l{left:-12%}.c-pan.r{right:-12%}
+.c-pan::after{content:"";position:absolute;left:-2%;right:-2%;bottom:0;height:16px;background:linear-gradient(#eef2f4,#9aa3a8);border:2px solid #6c757a;border-radius:0 0 60px 60px}
+.c-load{min-width:58px;padding:5px 8px;background:#fff6df;border:3px solid var(--wood-d);border-radius:10px;font:900 19px var(--head);color:var(--wood-d);text-align:center}
+.c-foot{position:absolute;left:50%;top:50px;bottom:6px;width:20px;transform:translateX(-50%);z-index:1;background:linear-gradient(90deg,var(--wood),#d29a55,var(--wood));border-radius:6px 6px 0 0}
+.c-foot::after{content:"";position:absolute;bottom:-6px;left:-50px;right:-50px;height:14px;background:linear-gradient(#d29a55,var(--wood));border:2px solid var(--wood-d);border-radius:8px}
+.c-wt{min-width:46px;min-height:44px;padding:2px 6px;border-radius:12px 12px 6px 6px;font:900 15px var(--head);color:#fff;border:2px solid #2b3236;background:linear-gradient(#8e9aa1,#4c565c);
+ box-shadow:0 3px 0 #2b3236;text-shadow:0 1px 0 #000}
+.c-wt.big{min-width:58px;background:linear-gradient(#e2b04e,#9c6d17);border-color:#6a470c;box-shadow:0 3px 0 #6a470c}
+.c-weights{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;background:#efe3c4;border-radius:14px;border:2px dashed #b08850;margin-top:6px}
+.c-weights small{color:#5e3b1a;font-weight:700}
+.c-state{text-align:center;font-weight:700}
+/* Ja / Nein */
+.j-options.yesno{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.j-options.yesno button{min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.j-options.yesno span{font-size:30px;line-height:1}
+/* Fehler finden: Notizzettel */
+.c-note{background:repeating-linear-gradient(#fffef8 0 38px,#cfe0f5 38px 40px);padding:12px 14px;border-radius:6px;border:1px solid #d9cfb3;box-shadow:0 6px 12px #0002;transform:rotate(-.6deg);
+ display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.c-line{font:800 22px var(--head);text-align:left;min-height:50px;background:#ffffffb0;border:3px solid transparent;border-radius:10px;padding:6px 12px;color:#2c2a22}
+.c-line[aria-pressed="true"]{border-color:var(--orange);background:#fff1dc}
+.c-line.bad{color:#b3261e;border-color:#e2553f}
+.c-line.bad::before{content:"✗ "}
+.c-line em{font-style:normal;color:var(--leaf-d);font-size:17px;margin-left:6px}
+/* Zwei Wege */
+.c-ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}
+.c-way{min-height:62px;font:800 20px var(--head);background:var(--paper);border:3px solid #b08850;border-radius:14px;box-shadow:0 4px 0 #b08850;color:#2c2a22;padding:6px 10px}
+.c-way[aria-pressed="true"]{background:#e6f6d6;border-color:var(--leaf);box-shadow:0 4px 0 var(--leaf-d)}
+.c-way.good{border-color:var(--leaf)}
+.c-way em{font-style:normal;color:var(--leaf-d);display:block;font-size:15px}
+@media(max-width:650px){.c-drag{grid-template-columns:1fr}.c-scale{height:180px}.c-line{font-size:19px}.c-way{font-size:18px}.j-header{margin:0 62px 12px}.j-header h1{font-size:17px}.j-header>div{padding:4px 12px 6px}}
+
+/* ---------- Zahlenschloss am Festzelt ---------- */
+.f-lock{max-width:1000px;margin:0 auto;padding:0 12px 40px;color:#2c2a22}
+.f-tent{position:relative;height:220px;border-radius:20px;overflow:hidden;border:4px solid #fff;box-shadow:0 0 0 3px var(--wood-d),0 6px 0 3px var(--wood-dd)}
+.f-tent img{width:100%;height:100%;object-fit:cover;display:block}
+.f-flap{position:absolute;top:0;bottom:0;width:50%;background:repeating-linear-gradient(90deg,var(--berry) 0 30px,#fff6df 30px 60px);transition:transform 1.2s cubic-bezier(.5,0,.3,1);box-shadow:inset 0 -20px 30px #0003}
+.f-flap.l{left:0;transform-origin:left}.f-flap.r{right:0;transform-origin:right}
+.f-lock.open .f-flap{transform:scaleX(.06)}
+.f-padlock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:60px;filter:drop-shadow(0 4px 4px #0006);transition:opacity .4s}
+.f-lock.open .f-padlock{opacity:0}
+.f-card{position:relative;margin-top:-26px;padding:20px;background:linear-gradient(var(--paper),#fbefcf);border:3px solid var(--wood-d);border-radius:22px;box-shadow:0 6px 0 var(--wood-dd)}
+.f-card h1{font:900 28px var(--head);color:var(--wood-d)}
+.f-wheels{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+.f-wheel-box{background:#fff;border:2px solid #e3d3a8;border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.f-clue{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.f-clue img{width:42px;height:42px;object-fit:contain}.f-clue small{font-size:13px;color:#6b5a3a}
+.f-wheel{display:flex;flex-direction:column;align-items:center;background:linear-gradient(#4a4f55,#2b2f33);border-radius:14px;padding:4px;border:3px solid #9c6d17;box-shadow:0 4px 0 #6a470c}
+.f-arrow{min-width:70px;min-height:46px;background:none;border:0;color:var(--gold);font-size:22px}
+.f-digit{font:900 46px var(--head);color:#fff;width:70px;text-align:center;background:#111;border-radius:8px;line-height:1.25;box-shadow:inset 0 6px 8px #000a}
+.f-schein{width:100%}.f-schein summary{min-height:44px;cursor:pointer;font-weight:700;color:#7a4a20;display:flex;align-items:center;justify-content:center}
+.f-schein ol{margin:0;padding:0;list-style:none;font-size:14px;text-align:center}
+.f-help{background:#fff1dc;padding:6px 10px;border-radius:10px;font-size:14px;margin:0}
+.f-status{min-height:24px;font-weight:700;text-align:center}
+.f-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Mein Feststand ---------- */
+.s-screen{max-width:1000px;margin:0 auto;padding:0 12px 40px;color:#2c2a22}
+.s-head{text-align:center;margin-bottom:12px}.s-head h1{font:900 30px var(--head);color:var(--wood-d)}
+.s-stall{position:relative;height:clamp(300px,56vw,480px);border-radius:22px;overflow:hidden;border:4px solid #fff;box-shadow:0 0 0 3px var(--wood-d),0 8px 0 3px var(--wood-dd);
+ background:#9cc27a url(../assets/scenes/dorffest.webp) center/cover}
+.s-awning{position:absolute;left:8%;right:8%;top:5%;height:17%;background:repeating-linear-gradient(90deg,var(--berry) 0 10%,#fff6df 10% 20%);border-radius:12px 12px 0 0;
+ clip-path:polygon(0 0,100% 0,100% 78%,95% 100%,90% 78%,85% 100%,80% 78%,75% 100%,70% 78%,65% 100%,60% 78%,55% 100%,50% 78%,45% 100%,40% 78%,35% 100%,30% 78%,25% 100%,20% 78%,15% 100%,10% 78%,5% 100%,0 78%);
+ filter:drop-shadow(0 6px 0 #0002)}
+.s-sign{position:absolute;left:50%;top:23%;transform:translateX(-50%);z-index:1;background:linear-gradient(var(--wood-l),#7a4a20);color:#fff;font:900 clamp(15px,2.6vw,22px) var(--head);
+ padding:6px 18px;border-radius:10px;border:3px solid #4a2c10;box-shadow:0 4px 0 var(--wood-dd);white-space:nowrap}
+.s-posts i{position:absolute;top:20%;bottom:30%;width:3%;background:linear-gradient(90deg,#7a4a20,var(--wood-l),#7a4a20)}
+.s-posts i:first-child{left:10%}.s-posts i:last-child{right:10%}
+.s-counter{position:absolute;left:6%;right:6%;bottom:5%;height:30%;background:repeating-linear-gradient(90deg,#00000014 0 2px,transparent 2px 18%),linear-gradient(#c58b48,var(--wood));
+ border:4px solid var(--wood-d);border-radius:10px;box-shadow:inset 0 8px 0 #e0a865,0 8px 0 var(--wood-dd)}
+.s-piece{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:clamp(46px,8vw,72px);height:clamp(46px,8vw,72px);background:none;border:0;padding:0;z-index:2}
+.s-piece img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 2px #0005);pointer-events:none}
+.s-piece.big{width:clamp(84px,15vw,140px);height:clamp(84px,15vw,140px)}
+.s-piece.tray{position:static;transform:none}
+.s-tray{margin-top:16px;padding:12px;background:var(--paper);border:3px dashed #b08850;border-radius:18px}
+.s-tray p{margin:0 0 8px;font-weight:700;color:var(--wood-d)}
+.s-tray-items{display:flex;flex-wrap:wrap;gap:6px}
+.s-actions{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+
+/* ---------- Bewegung ---------- */
+@keyframes g-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes g-ring{from{transform:scale(.8);opacity:.9}to{transform:scale(1.5);opacity:0}}
+@keyframes g-drift{from{transform:translate(-53%,-55%)}to{transform:translate(-47%,-52%)}}
+@keyframes g-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.reduce-motion .g-pin.next .g-pin-medal,.reduce-motion .g-pin.next::before,.reduce-motion .g-pin-bang,.reduce-motion .g-fog,.reduce-motion .g-go,.reduce-motion .c-beam,.reduce-motion .c-pan,.reduce-motion .f-flap{animation:none;transition:none}
+@media(prefers-reduced-motion:reduce){.g-pin.next .g-pin-medal,.g-pin.next::before,.g-pin-bang,.g-fog,.g-go{animation:none}}
+
+/* ---------- Nachbesserungen nach dem ersten Blick ---------- */
+body.hud-sub{background:radial-gradient(ellipse at 50% -80px,#fff8dd,transparent 420px),linear-gradient(180deg,#bfe3f2 0,#e7f3da 300px,#d8eac2 100%) fixed}
+.g-party{left:calc(var(--x) - 9%);transform:translate(-50%,-62%)}
+.j-header>div{min-width:0}.j-header small{white-space:nowrap}
+@media(max-width:650px){
+ .g-top{flex-wrap:nowrap;gap:6px}.g-medal{width:56px;height:56px}.g-pname{padding:4px 10px 4px 20px}.g-pname b{font-size:16px}
+ .g-res{gap:4px}.g-pill{font-size:13px;padding:2px 8px 2px 2px;gap:4px}.g-pill i{width:24px;height:24px;font-size:13px}
+ .g-pan{top:78px}.g-world::after{background:linear-gradient(#0000,transparent 22%,transparent 70%,#0005)}
+ .j-xp{display:none}.j-header>div{flex:1}
+}
+
+/* Waage: Schale hängt am Balken und wächst nach oben; gleiche Gewichte liegen als Stapel mit Zähler. */
+.c-pan{top:auto;bottom:-128px;transform-origin:50% 100%;flex-wrap:wrap;align-content:flex-end;min-height:0}
+.c-wt small{display:block;font-size:12px;line-height:1;opacity:.9}
+
+/* Gewichte als Spielanzeige: Haus und Rucksack stehen oben am Bildschirm und scrollen mit (verdecken nichts). */
+#hud .g-round{position:absolute}
+.c-scale{height:236px}.c-beam{top:70px}.c-foot{top:74px}
+.c-pile.small{flex-wrap:wrap;padding:8px 8px 8px 20px}.c-pile.small .c-item{width:36px;height:36px;margin-left:-12px}
+@media(max-width:650px){
+ .hud-sub .j-shell{padding-top:4px}.j-header{margin-bottom:8px;min-height:50px}.j-header h1{font-size:16px}.j-header small{font-size:9px}
+ .j-stage{height:198px}.j-task{padding:16px 15px}.j-task .v-primary{min-height:50px;font-size:18px}
+ .c-line{min-height:46px;font-size:19px;padding:4px 10px}.c-note{gap:5px;padding:8px 10px}
+ .c-scale{height:214px}.c-beam{top:58px}.c-foot{top:62px}.c-pan{bottom:-118px}
+}
+/* Handy: zugeklappter Denkzettel nur eine Zeile, Waage etwas flacher – damit „Prüfen“ im ersten Bildschirm bleibt. */
+@media(max-width:650px){
+ .j-task .notebook{margin:8px 0}.j-task .notebook:not([open])>summary{min-height:44px;padding:6px 12px}.j-task .notebook:not([open]) summary small{display:none}
+ .c-scale{height:188px}.c-beam{top:44px}.c-foot{top:48px}.c-pan{bottom:-110px}.c-weights{padding:6px}.c-state{margin:4px 0}
+ .j-how{margin:6px 0}
+}
+
+.c-beam{left:14%;right:14%}.c-pan.l{left:-8%}.c-pan.r{right:-8%}
+.c-weights .c-state{margin:0 0 0 6px;font-size:14px;text-align:left;line-height:1.25;color:#5e3b1a}
+@media(max-width:650px){.c-scale{height:172px}.j-task h2{margin-bottom:8px}}
+@media(max-width:650px){.j-stage{height:184px}.j-task{padding-top:13px}.j-task-top{margin-bottom:8px}}
+
+/* Zahlenschloss: drei Räder immer nebeneinander wie an einem echten Schloss */
+.f-wheels{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:650px){.f-title{display:none}.f-wheel-box{padding:8px 4px}.f-arrow{min-width:52px}.f-digit{width:52px;font-size:38px}.f-clue b{font-size:13px}
+ .f-tent{height:150px}.f-card{padding:16px 12px}.f-card h1{font-size:24px}.f-schein summary{font-size:13px}}
+
+/* ---------- Befunde der Optik-Prüfung (2026-11-14) ---------- */
+/* Karte verschieben: Pfeile mit den Orten, die gerade außerhalb liegen */
+.g-panbtn{position:absolute;top:50%;z-index:6;transform:translateY(-50%);display:flex;align-items:center;gap:4px;min-height:56px;min-width:48px;padding:6px 8px;
+ background:#2a190ad9;color:#fff;border:3px solid var(--gold);font:900 20px var(--head);box-shadow:0 4px 0 #2a190a}
+.g-panbtn.l{left:0;border-left:0;border-radius:0 16px 16px 0}.g-panbtn.r{right:0;border-right:0;border-radius:16px 0 0 16px}
+.g-panbtn span{display:flex;flex-direction:column;gap:3px}
+.g-panbtn i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:900 12px var(--head);font-style:normal;background:#fff6df;color:var(--wood-d)}
+.g-panbtn i.done{background:var(--leaf);color:#fff}.g-panbtn i.next{background:var(--gold)}
+.g-panbtn[hidden]{display:none}
+/* Nebel: weiche Wolkenballen statt eines hellen Flecks */
+.g-fog{width:22%;filter:blur(3px);background:
+ radial-gradient(circle at 30% 60%,#ffffffee 0 18%,transparent 34%),radial-gradient(circle at 55% 45%,#ffffffe6 0 22%,transparent 38%),
+ radial-gradient(circle at 75% 62%,#f4f8ffe6 0 17%,transparent 32%),radial-gradient(ellipse at 50% 60%,#ffffff99,transparent 66%)}
+.g-pin.fog .g-pin-name::after{content:" ☁";opacity:.9}
+/* Karten unter der Karte: Symbol rechts oben, damit es zweizeilige Titel nicht verdeckt */
+.g-card{min-height:150px}.g-card-ico{left:auto;right:8px}
+.g-foot a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;margin-top:6px;border-radius:99px;background:#ffffff26;color:#fff;font-weight:700;text-decoration:none}
+/* Auftragsbildschirm */
+.j-header small{font-size:11px;color:#fff3c4}
+.j-read{min-height:44px;padding:4px 14px;border-radius:99px;background:#fff6df;border:2px solid #b08850;box-shadow:0 3px 0 #b08850;color:var(--wood-d);font:800 14px var(--head)}
+.j-read:active{transform:translateY(2px);box-shadow:0 1px 0 #b08850}
+.j-task .notebook>summary{background:#fff6df;border:2px solid #b08850;border-radius:12px;box-shadow:0 3px 0 #b08850;color:var(--wood-d)}
+.j-schein li{flex-wrap:nowrap;color:#3e4a36}.j-schein .j-br{display:none}.j-res{margin-left:auto;white-space:nowrap}
+.j-story p{color:#4c5a44}
+.c-line{background:#fff;border:3px solid #b08850;box-shadow:0 3px 0 #b08850}
+.c-line[aria-pressed="true"]{box-shadow:0 3px 0 var(--orange-d)}
+.c-way:hover,.c-line:hover{background:#fff}.c-way[aria-pressed="true"]:hover{background:#e6f6d6}
+.c-wt.big{color:#3b250f;text-shadow:0 1px 0 #ffe9a8;background:linear-gradient(#ffd876,#d9a23a)}
+/* Waage: Schalen hängen an Stangen genau unter den Balkenenden */
+.c-scale{height:200px}.c-beam{left:20%;right:20%;top:40px}.c-foot{top:44px}
+.c-pan{top:6px;bottom:auto;width:124px;height:128px;min-height:0;transform-origin:50% 0;flex-wrap:wrap;align-content:flex-end;padding:6px 4px 18px}
+.c-pan.l{left:-62px}.c-pan.r{right:-62px}
+.c-pan::before{content:"";position:absolute;left:50%;top:-4px;bottom:14px;width:3px;margin-left:-1.5px;background:#6c757a;z-index:-1;border-radius:2px}
+.c-pan .c-load,.c-pan .c-wt{position:relative}
+@media(max-width:650px){.c-scale{height:190px}.c-beam{top:36px}.c-foot{top:40px}.c-pan{height:126px}}
+/* Zahlenschloss: Knöpfe auch auf dem Tablet im ersten Bildschirm, Lieferschein als Knopf */
+.f-tent{height:150px}
+.f-schein summary{display:inline-flex;gap:6px;padding:0 12px;border-radius:99px;background:#fff6df;border:2px solid #b08850;box-shadow:0 3px 0 #b08850;list-style:none}
+.f-schein summary::-webkit-details-marker{display:none}
+.f-schein{display:flex;flex-direction:column;align-items:center}
+/* Rucksack: Beschriftungen auf gleicher Höhe */
+.g-tile{justify-content:flex-start;padding-top:14px;font-size:12px}
+/* Feststand: gemalter Dorfplatz als Hintergrund, Stapel mit Zähler */
+.s-stall{background:#9cc27a url(../assets/scenes/erkundung-w6.webp) center/cover}
+.s-piece.tray{position:relative;width:64px;height:64px}
+.s-count{position:absolute;right:-4px;bottom:-4px;min-width:26px;height:26px;padding:0 5px;border-radius:99px;background:var(--wood-d);color:#fff;font:900 13px var(--head);display:grid;place-items:center;border:2px solid #fff}
+/* Übungsbildschirm im selben Stil (Kopfzeile, Schnellknöpfe) */
+body.hud-sub .topbar{background:linear-gradient(#6b4220,#45290f);border-bottom:3px solid var(--gold);color:#fff;margin:0 10px;border-radius:16px;box-shadow:0 4px 0 #2a190a}
+body.hud-sub .topbar small,body.hud-sub .topbar .xp-l{color:#ffe3a0}
+body.hud-sub .quick-btn{background:linear-gradient(var(--paper),var(--paper2));border:3px solid var(--wood-d);box-shadow:0 4px 0 var(--wood-dd);border-radius:16px;font-family:var(--head);font-weight:800;color:var(--wood-d)}
+body.hud-sub .map-h,body.hud-sub .screen h1{color:var(--wood-d)}
+/* Waage: Platz für die gesenkte Schale (bis 14° Neigung), alter Karten-Knopf im Übungsbereich überflüssig */
+.c-scale{height:222px}
+@media(max-width:650px){.c-scale{height:206px}}
+body.hud-sub #app .ghost[data-go="#/map"]:not(.row-actions *){display:none}
