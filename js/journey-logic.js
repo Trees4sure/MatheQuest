@@ -4,21 +4,24 @@
 // item = zählbare Dinge (bis 100), bulk = Menge für große Zahlen, damit die Geschichten glaubwürdig bleiben.
 export const CHAPTERS = [
  {id:'w1',name:'Auf dem Bauernhof',short:'Bauernhof',person:'Frau Hoppe',item:'Eier',icon:'🥚',img:'assets/items/ei.webp',bulk:'Kilogramm Heu',pack:'Kartons',packIn:'In jedem Karton',into:'in jeden Karton',gone:'werden zur Bäckerei gebracht',goneBulk:'werden verfüttert',x:23,y:76,intro:'Das Dorffest rückt näher. Frau Hoppe braucht Hilfe beim Packen für den Kuchenstand.',end:'Die Eier sind sicher verpackt. Frau Hoppe bringt sie zur Bäckerei.',reward:'Hofhelfer',
-  seq:[['add','number'],['sub','line'],['missing','fill'],['compare','compare'],['add','choice']]},
+  seq:[['add','number'],['sub','line'],['missing','drag'],['compare','compare'],['add','choice']]},
  {id:'w2',name:'Duft aus der Bäckerei',short:'Bäckerei',person:'Bäckerin Mehl',item:'Brötchen',icon:'🥨',img:'assets/items/brot.webp',bulk:'Gramm Mehl',pack:'Tüten',packIn:'In jeder Tüte',into:'in jede Tüte',gone:'werden verkauft',goneBulk:'werden verbacken',x:23,y:34,intro:'In der Backstube duftet es schon. Hilf beim Vorbereiten des Festbuffets.',end:'Das Gebäck ist fertig. Jetzt können die Gäste mit dem Zug kommen.',reward:'Backstubenprofi',
-  seq:[['mul','number'],['div','split'],['add','line'],['compare','compare'],['sub','choice']]},
+  seq:[['mul','number'],['div','split'],['add','mistake'],['compare','compare'],['sub','choice']]},
  {id:'w3',name:'Gäste am Bahnhof',short:'Bahnhof',person:'Schaffner Schulz',item:'Fahrkarten',icon:'🎫',img:'assets/items/fahrkarte.webp',bulk:'Sitzplätze',pack:'Umschläge',packIn:'In jedem Umschlag',into:'in jeden Umschlag',gone:'werden verkauft',goneBulk:'werden besetzt',x:54,y:22,intro:'Die ersten Festgäste sind unterwegs. Am kleinen Bahnhof wird jede helfende Hand gebraucht.',end:'Alle Gäste haben ihre Fahrkarten. Der Weg zum Fest ist frei.',reward:'Bahnhofshelfer',
-  seq:[['sub','number'],['add','line'],['compare','compare'],['missing','choice'],['mul','number']]},
+  seq:[['sub','number'],['add','line'],['compare','compare'],['missing','scale'],['mul','estimate']]},
  {id:'w4',name:'Gemeinsam anpacken',short:'Feuerwehr',person:'Feuerwehrfrau Fiete',item:'Trinkflaschen',icon:'💧',img:'assets/items/trinkflasche.webp',bulk:'Liter Wasser',pack:'Kisten',packIn:'In jeder Kiste',into:'in jede Kiste',gone:'werden ausgegeben',goneBulk:'werden verbraucht',x:85,y:32,intro:'Die Feuerwehr sorgt beim Fest für Trinkwasser. Bereite die Vorräte für die Helfer vor.',end:'Das Wasser steht bereit. Fiete bedankt sich für deine Unterstützung.',reward:'Wasserwächter',
-  seq:[['missing','fill'],['sub','number'],['mul','choice'],['add','line'],['div','split']]},
+  seq:[['missing','fill'],['sub','estimate'],['mul','choice'],['add','line'],['div','split']]},
  {id:'w5',name:'Brumms Werkstatt',short:'Schreinerei',person:'Schreinermeister Brumm',item:'Bauklötze',icon:'🧱',img:'assets/items/bauklotz.webp',bulk:'Schrauben',pack:'Bausätze',packIn:'In jedem Bausatz',into:'in jeden Bausatz',gone:'werden verbaut',goneBulk:'werden verbaut',x:82,y:71,intro:'Brumm baut eine Spielecke für das Dorffest. Hilf ihm, die Bauteile vorzubereiten.',end:'Die Bausätze sind fertig. Brumm stellt die Spielecke auf dem Dorfplatz auf.',reward:'Werkstattprofi',
-  seq:[['compare','compare'],['mul','number'],['sub','line'],['div','choice'],['missing','number']]},
+  seq:[['compare','compare'],['mul','ways'],['sub','line'],['div','choice'],['missing','scale']]},
  {id:'w6',name:'Unser großes Dorffest',short:'Dorfplatz',person:'Bürgermeisterin Nolte',item:'Kuchenstücke',icon:'🍰',img:'assets/items/kuchenstueck.webp',bulk:'Lose',pack:'Teller',packIn:'Auf jedem Teller',into:'auf jeden Teller',gone:'werden serviert',goneBulk:'werden verkauft',x:53,y:49,intro:'Die Wimpel hängen, die Gäste sind da. Nur der Kuchenstand wartet noch auf deine Hilfe.',end:'Geschafft! Rechenbach feiert. Du hast an allen sechs Orten geholfen.',reward:'Dorffestfreund',
-  seq:[['div','split'],['add','choice'],['mul','number'],['sub','number'],['missing','fill']]}
+  seq:[['div','split'],['add','ways'],['mul','number'],['sub','mistake'],['missing','fill']]}
 ];
 // Ab Klasse 5 rechnen alle Kapitel mit denselben Themen, aber in je eigener Reihenfolge.
 const UPPER={5:['frac','decimal','missing','mul','area'],6:['frac','percent','decimal','ratio','area'],7:['frac','percent','decimal','equation','area']};
-export const MODES=['number','line','fill','split','compare','choice'];
+/* Stufe C: drag = Gegenstände in den Karton ziehen, scale = Waage ins Gleichgewicht bringen,
+   estimate = „Reicht das?“ überschlagen, mistake = die falsche Rechnung finden, ways = zwei richtige Rechenwege wählen. */
+export const MODES=['number','line','fill','split','compare','choice','drag','scale','estimate','mistake','ways'];
+import {evalExpr} from './answer.js';
 const PACK_SIZES=[6,10,12,15,20,24,25]; // übliche Packungsgrößen statt beliebiger Zahlen
 const rnd=(a,b,rng)=>a+Math.floor(rng()*(b-a+1));
 const r2=n=>Math.round(n*100)/100;
@@ -35,7 +38,8 @@ export function stepPlan(id,step,grade){
  return [op,mode];
 }
 const TITLES={add:()=>'Alles zusammenzählen',sub:()=>'Den Vorrat prüfen',missing:()=>'Die Bestellung ergänzen',compare:()=>'Zwei Lieferungen vergleichen',mul:c=>`${c.pack} packen`,div:()=>'Gerecht verteilen',frac:()=>'Einen Anteil abmessen',decimal:()=>'Die Kasse rechnen',percent:()=>'Für die Helfer zurücklegen',ratio:()=>'Eintrittskarten berechnen',equation:()=>'Den Bestellzettel lösen',area:()=>'Den Platz ausmessen'};
-export const stepTitles=(c,grade)=>[0,1,2,3,4].map(step=>TITLES[stepPlan(c.id,step,grade)[0]](c));
+const MODE_TITLES={estimate:'Reicht das?',mistake:'Den Fehler finden',ways:'Zwei Rechenwege'};
+export const stepTitles=(c,grade)=>[0,1,2,3,4].map(step=>{const [op,mode]=stepPlan(c.id,step,grade);return ['add','sub','mul'].includes(op)&&MODE_TITLES[mode]||TITLES[op](c);});
 
 export const chapterCount=p=>CHAPTERS.filter(c=>p.campaign?.chapters?.[c.id]?.completed).length;
 export const nextChapter=p=>CHAPTERS.find(c=>!p.campaign?.chapters?.[c.id]?.completed)||CHAPTERS[5];
@@ -106,10 +110,79 @@ export function createJourneyTask(id,step,grade=1,level=1,rng=Math.random,prev=[
  if(mode==='line'&&!(['add','sub'].includes(op)&&Math.max(a,answer)<=20))mode='choice';
  if(mode==='fill'&&!(op==='missing'&&a+b<=20))mode='number';
  if(mode==='split'&&!(op==='div'&&a*b<=36&&a<=6))mode='number';
+ if(mode==='drag'&&!(op==='missing'&&a+b<=20))mode='scale';
+ if(mode==='scale'&&op!=='missing')mode='number';
+ if(['estimate','mistake','ways'].includes(mode)&&!['add','sub','mul'].includes(op))mode=mode==='estimate'?'number':'choice';
  if(chain)question='Vom Lieferschein: '+question;
  const task={id:`${id}-${step}-${grade}-${Math.floor(rng()*1e9)}`,op,mode,a,b,answer,unit,type,question,explain,hints,visual,grade,level,skill:`reise-k${grade}-${op}`,chain};
  if(mode==='choice')task.options=makeOptions(answer,optionStep,rng);
+ if(['scale','estimate','mistake','ways'].includes(mode))stageC(task,c,grade,level,rng);
  return task;
+}
+
+/* Stufe C: Zusatzdaten der neuen Formen. task.answer bleibt das Rechenergebnis (Lieferschein, Tests);
+   task.goal ist, was die Mitmach-Fläche liefern muss (ja/nein, Nummer der falschen Rechnung, zwei Wege). */
+const SYM={add:'+',sub:'−',mul:'·'};
+function stageC(t,c,grade,level,rng){
+ const sc=['add','sub','missing'].includes(t.op)?(grade<=2?1:grade===3?10:100):1;
+ const lim=grade===1?(level<3?10:20):grade===2?100:grade===3?1000:10000;
+ /* Linke und rechte Zahl der Rechnung, so wie sie im Aufgabentext steht. */
+ const A=t.visual.a,B=t.visual.b;
+ if(t.mode==='scale'){t.weights=[10*sc,sc];return;}
+ if(t.mode==='estimate'){
+  const d=Math.max(sc,Math.round(t.answer*(0.15+rng()*0.25)/sc)*sc);
+  let need=rng()<0.5?t.answer+d:t.answer-d;if(need<=0)need=t.answer+d;
+  if(t.op!=='mul'&&need>100&&t.answer<=100&&t.question.includes(c.item))need=t.answer-d>0?t.answer-d:t.answer+1;
+  t.need=need;t.goal=t.answer>=need?'ja':'nein';
+  const X=t.question.includes(c.bulk)?c.bulk:c.item;
+  if(t.op==='add')t.question=`${t.chain?'Vom Lieferschein: ':''}Es sind ${A} ${X} bereit. ${B} ${B===1?'kommt':'kommen'} dazu. Gebraucht werden ${need}. Reicht das?`;
+  else if(t.op==='sub')t.question=t.question.replace(/Wie viele bleiben übrig\?$/,`Es müssen noch ${need} übrig bleiben. Reicht das?`);
+  else t.question=t.question.replace(/Wie viele .* sind es insgesamt\?$/,`Gebraucht werden ${need} ${c.item}. Reicht das?`);
+  const expr=`${A} ${SYM[t.op]} ${B}`;
+  t.explain=`${expr} = ${t.answer}. ${t.answer} ist ${t.answer===need?'genau':t.goal==='ja'?'mehr als':'weniger als'} ${need} – ${t.goal==='ja'?'es reicht':'es reicht nicht'}.`;
+  t.hints=['Du musst nicht genau rechnen. Runde die Zahlen und überschlage.',`Rechne ${expr} ungefähr. Ist das mehr oder weniger als ${need}?`];
+  return;
+ }
+ if(t.mode==='mistake'){
+  const errs=(t.op==='mul'?[B,-B,1,-1,10]:[1,-1,10,-10].map(k=>k*sc)).map(e=>t.answer+e).filter(v=>v>=0&&v!==t.answer);
+  const wrong=errs[Math.floor(rng()*errs.length)];
+  const lines=[{t:`${A} ${SYM[t.op]} ${B} = ${wrong}`,ok:false}];
+  for(let tries=0;lines.length<3&&tries<50;tries++){
+   let x,y,txt;
+   if(t.op==='mul'){x=rnd(2,grade<=3?9:12,rng);y=rnd(2,10,rng);txt=`${x} · ${y} = ${x*y}`;}
+   else{x=rnd(2,Math.max(2,Math.floor(lim/sc/2)),rng)*sc;y=rnd(1,Math.max(1,Math.floor((lim-x)/sc)),rng)*sc;if(x+y>lim)continue;txt=t.op==='add'?`${x} + ${y} = ${x+y}`:`${x+y} − ${y} = ${x}`;}
+   if(!lines.some(l=>l.t===txt))lines.push({t:txt,ok:true});
+  }
+  const pos=Math.floor(rng()*lines.length),bad=lines.shift();lines.splice(pos,0,bad);
+  t.lines=lines;t.goal=String(pos);t.wrong=wrong;
+  t.question=t.question.replace(/[^.!]*\?$/,'').trim()+' Auf dem Zettel stehen drei Rechnungen dazu. Eine ist falsch – tippe sie an.';
+  t.explain=`Falsch war ${A} ${SYM[t.op]} ${B} = ${wrong}. Richtig ist ${t.answer}. `+t.explain;
+  t.hints=['Rechne jede Zeile auf dem Zettel selbst nach.',`Prüfe besonders die Rechnung mit ${A} und ${B}.`];
+  return;
+ }
+ /* ways: zwei richtige und zwei falsche Rechenwege. Jeder Weg wird ausgerechnet – so kann keiner versehentlich stimmen. */
+ const ok=[],no=[];
+ if(t.op==='add'){
+  ok.push(`${B} + ${A}`);
+  if(B>=2*sc){const x=rnd(1,B/sc-1,rng)*sc;ok.push(`${A} + ${x} + ${B-x}`);no.push(`${A} + ${x}`);}else{const y=rnd(1,A/sc-1,rng)*sc;ok.push(`${y} + ${A-y} + ${B}`);}
+  if(B>sc)ok.push(`${A+sc} + ${B-sc}`);
+  no.push(`${A} + ${B} + ${sc}`,`${A+sc} + ${B+sc}`);if(A>B)no.push(`${A} − ${B}`);
+ }else if(t.op==='sub'){
+  ok.push(`${A} − ${B+sc} + ${sc}`,`${A+sc} − ${B+sc}`);
+  if(B>=2*sc){const x=rnd(1,B/sc-1,rng)*sc;ok.push(`${A} − ${x} − ${B-x}`);no.push(`${A} − ${x} + ${B-x}`);}
+  no.push(`${A} + ${B}`,`${A+sc} − ${B}`);if(B+sc<=A)no.push(`${A} − ${B+sc}`);
+ }else{
+  ok.push(`${B} · ${A}`,`${A-1} · ${B} + ${B}`,`${A} · ${B-1} + ${A}`);if(A%2===0)ok.push(`${A/2} · ${B} + ${A/2} · ${B}`);
+  no.push(`${A} + ${B}`,`${A} · ${B-1}`,`${A-1} · ${B}`,`${A} · ${B} + ${B}`);
+ }
+ const val=s=>evalExpr(s);
+ const good=[...new Set(ok)].filter(s=>val(s)===t.answer),bad=[...new Set(no)].filter(s=>val(s)!==t.answer&&val(s)>=0);
+ const take=(list,n)=>{const l=[...list],r=[];while(r.length<n&&l.length)r.push(l.splice(Math.floor(rng()*l.length),1)[0]);return r;};
+ const all=[...take(good,2).map(s=>({t:s,ok:true})),...take(bad,2).map(s=>({t:s,ok:false}))];
+ for(let i=all.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+ t.ways=all;t.goal=all.map((w,i)=>w.ok?i:-1).filter(i=>i>=0).join(',');
+ t.question+=' Welche zwei Rechenwege führen zum richtigen Ergebnis? Tippe beide an.';
+ t.hints=['Rechne jeden Weg aus. Zwei Wege geben dasselbe Ergebnis wie die Aufgabe.',`Das Ergebnis der Aufgabe ist ${SYM[t.op]==='·'?'das Malergebnis':'die Lösung'} von ${A} ${SYM[t.op]} ${B}. Welche Wege kommen dort an?`];
 }
 export function awardStep(p,id,taskId){
  p.campaign||={chapters:{}};p.campaign.chapters||={};

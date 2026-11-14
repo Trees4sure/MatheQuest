@@ -18,6 +18,8 @@ import * as explore from "./questworld.js";
 import * as journey from "./journey.js";
 import * as klasse7 from "./klasse7.js";
 import * as share from "./share.js";
+import * as fest from "./fest.js";
+import { setHud } from "./hud.js";
 import "./install.js";
 import { ROOMS } from "./lernorte-logic.js";
 
@@ -43,8 +45,9 @@ const onBadges = (list) => list?.forEach((b, i) => setTimeout(() => { sound("lev
 async function route() {
   main.dispatchEvent(new Event("cleanup"));
   stopSpeaking();
-  $$(".talk, .modal-back, .drag-ghost").forEach((e) => e.remove());
+  $$(".talk, .modal-back, .drag-ghost, .dz-ghost").forEach((e) => e.remove());
   const [, page, arg] = (location.hash || "#/").split("/");
+  setHud(page, !!store.current());
   if (!store.current() && page !== "new") return store.profiles().length ? screenProfiles() : screenNew();
   window.scrollTo(0, 0);
   switch (page) {
@@ -52,6 +55,7 @@ async function route() {
     case "dorffest": return journey.finale(main, { go });
     case "hilfe": return journey.help(main);
     case "teilen": return share.run(main);
+    case "stand": return fest.stand(main);
     case "training": return screenMap();
     case "new": return screenNew();
     case "profiles": return screenProfiles();
@@ -141,7 +145,7 @@ function greeting() {
 function screenMap() {
   const p = store.current(), due = dueSkills(p).filter((s) => TOPIC_BY_ID[s]).length, goals = store.goals();
   const d = store.day();
-  main.innerHTML = `${topbar()}${journey.nav("training")}<section class="screen map">
+  main.innerHTML = `${topbar()}<section class="screen map">
     <div class="greet"><div class="greet-fips">${mascot({ hat: p.cosmetic })}</div><div class="bubble">${esc(greeting())}</div></div>
     <div class="goals">${goals.map((g) => `<div class="goal"><span>${g.emoji}</span>${esc(g.text)}</div>`).join("")}
       <div class="daybar" aria-label="Tagesziel"><div style="width:${Math.min(100, (d.solved / p.dailyGoal) * 100)}%"></div></div></div>
@@ -204,7 +208,7 @@ function screenRanking(){
 
 function screenCollection() {
   const p = store.current();
-  main.innerHTML = `${topbar()}${journey.nav("collection")}<section class="screen">
+  main.innerHTML = `${topbar()}<section class="screen">
     <div class="banner plain"><button class="ghost back" data-go="#/map" aria-label="Zurück">←</button><h1>🎒 Deine Sammlung</h1></div>
     <h2>Dein Dorfpass</h2><p class="muted">Für jeden Ort, an dem du fünf Aufträge erledigst, gibt es einen Stempel. Mit sechs Stempeln beginnt das Dorffest.</p><div class="v-stamps">${[1,2,3,4,5,6].map(i=>`<span class="journey-stamp ${p.campaign?.chapters?.["w"+i]?.completed?"earned":""}">${p.campaign?.chapters?.["w"+i]?.completed?"✓":i}</span>`).join("")}</div>${[1,2,3,4,5,6].every(i=>p.campaign?.chapters?.["w"+i]?.completed)?`<button class="btn" data-go="#/dorffest">Zum Dorffest und zur Urkunde</button>`:""}<h2>🏆 Gewonnene Rechen-Wettstreite</h2>
     <div class="crystals">${WORLDS.map((w) => `<div class="crystal stamp${p.bosses[w.id] ? " have" : ""}" style="--c:${w.color}" title="${esc(w.name)}"><span class="stamp-emo">${w.emoji}</span><small>${esc(w.name)}</small></div>`).join("")}</div>

@@ -49,7 +49,7 @@ export const STORY = {
     ask: [
       'Ich backe Brötchen für die Helfer. Rechne für mich, wie viele es werden.',
       'Die Brötchen kommen in Tüten. Verteile sie gerecht.',
-      'Wie viel Mehl kommt in die Schüssel? Ich habe zweimal abgewogen.',
+      'Ich habe drei Rechnungen auf meinen Zettel geschrieben. Eine stimmt bestimmt nicht – findest du sie?',
       'Zwei Bleche sind fertig. Auf welchem liegt mehr?',
       'Ein Teil wird schon verkauft. Wie viel bleibt für das Fest?'
     ],
@@ -73,15 +73,15 @@ export const STORY = {
       'Im Zug sitzen schon Gäste. Rechne mit mir, wie viele noch Platz haben.',
       'Am nächsten Halt steigen noch welche ein. Wie viele sind es dann?',
       'Zwei Wagen sind angekommen. Wo sitzen mehr Gäste?',
-      'Eine Kiste Kirschen fehlt noch auf meiner Liste. Welche Zahl gehört hin?',
-      'Die Fahrkarten liegen in Umschlägen. Wie viele sind es insgesamt?'
+      'Die Kirschkisten kommen auf meine Gepäckwaage. Beide Seiten müssen gleich schwer sein.',
+      'Die Fahrkarten liegen in Umschlägen. Reichen sie für alle Gäste? Schätz erst mal!'
     ],
     lob: [
       '{ergebnis}! Schneller als mein Zug, {name}.',
       'Genau {ergebnis}. Das trage ich gleich ein – wenn ich meinen Stift finde.',
       'Richtig! Und ich dachte, der erste Wagen wäre voller.',
       '{ergebnis} – jetzt ist meine Liste vollständig.',
-      '{ergebnis} Fahrkarten. Alles pünktlich, ausnahmsweise!'
+      'Gut geschätzt! Genau sind es {ergebnis} Fahrkarten. Alles pünktlich, ausnahmsweise!'
     ],
     patzer: { fips: false, text: 'Der Zug hat Verspätung – genau wie ich. Die Kirschkisten stehen noch auf dem Bahnsteig durcheinander.' },
     rettung: 'Hilf mir, {name}, die Kisten zu ordnen, bevor der Zug weiterfährt.',
@@ -94,14 +94,14 @@ export const STORY = {
     hallo: 'Hallo, {name}! Wasser für den Zuckerguss? Kein Problem! Wir füllen gleich die Flaschen ab.',
     ask: [
       'Wir brauchen eine bestimmte Menge. Wie viel fehlt noch?',
-      'Ein Teil ist schon ausgegeben. Wie viel bleibt übrig?',
+      'Ein Teil ist schon ausgegeben. Reicht der Rest noch? Überschlag mal!',
       'Die Flaschen stehen in Kisten. Wie viele sind es zusammen?',
       'Der Tankwagen bringt noch mehr. Rechne mit.',
       'Jetzt verteilen wir alles gerecht auf die Kisten.'
     ],
     lob: [
       '{ergebnis}! Kein Problem – mit dir schon gar nicht.',
-      'Richtig, {ergebnis}. Das reicht für alle Helfer.',
+      'Gut überschlagen! Genau bleiben {ergebnis}. Kein Problem!',
       '{ergebnis} Flaschen. Kein Problem!',
       'Genau {ergebnis}. Du rechnest wie eine echte Einsatzleitung.',
       '{ergebnis} in jede Kiste. Gerecht verteilt!'
@@ -117,7 +117,7 @@ export const STORY = {
     hallo: 'Hm. Da bist du ja, {name}. Der Kuchentisch braucht noch Beine. Und Schrauben. Und Hilfe.',
     ask: [
       'Zwei Kisten mit Bauteilen. Hm. Welche hat mehr?',
-      'Die Teile kommen in Bausätze. Wie viele brauchen wir?',
+      'Hm. Die Bausätze kann man auf verschiedene Arten ausrechnen. Welche zwei Wege stimmen?',
       'Ein paar Teile sind schon verbaut. Was bleibt übrig?',
       'Die Schrauben sollen gerecht auf die Tischbeine. Wie viele für jedes?',
       'Auf deinem Lieferschein steht, was wir schon haben. Wie viel fehlt?'
@@ -140,16 +140,16 @@ export const STORY = {
     hallo: 'Hallo {name}, hallo liebe Gäste! Alles ist da: Eier, Teig, Kirschen, Wasser und der Tisch. Jetzt wird der Kuchen verteilt!',
     ask: [
       'Der Kuchen wird auf Teller verteilt. Jeder bekommt gleich viel.',
-      'Es kommen noch Gäste. Wie viele Stücke brauchen wir jetzt?',
+      'Es kommen noch Gäste. Zwei Helfer rechnen verschieden – welche zwei Wege stimmen?',
       'Auf jeden Teller kommen gleich viele Stücke. Wie viele sind es zusammen?',
-      'Ein paar Stücke sind schon gegessen. Wie viele sind noch da?',
+      'Für meine Rede habe ich drei Rechnungen notiert. Eine ist falsch – welche?',
       'Zum Schluss rechnen wir mit deinem Lieferschein. Was fehlt noch?'
     ],
     lob: [
       '{ergebnis} für jeden. Gerechter geht es nicht!',
       '{ergebnis}! Ich halte dazu gleich eine kleine Rede … später.',
       'Genau {ergebnis}. Das ganze Dorf wird satt.',
-      'Noch {ergebnis} übrig. Genug für einen Nachschlag.',
+      'Gut aufgepasst! Richtig sind {ergebnis} übrig. Genug für einen Nachschlag.',
       '{ergebnis}! Damit ist der Festkuchen vollständig verteilt.'
     ],
     patzer: { fips: true, text: 'Fips hat unter dem Tisch ein Kuchenstück stibitzt! Jetzt stimmt die Zählung nicht mehr.' },
@@ -175,6 +175,14 @@ export const ASK_OP = {
   ratio: 'Gleicher Preis für jede Karte – was kostet es dann?',
   equation: 'Auf meinem Zettel steht eine Rechnung mit x. Welche Zahl ist x?',
   area: 'Wie viel Platz ist dort? Miss für mich aus.'
+};
+/* Neue Mitmach-Formen (Stufe C) brauchen einen eigenen Satz, wenn der Ortssatz nicht passt. */
+export const ASK_MODE = {
+  estimate: 'Reicht das? Du musst nicht genau rechnen – überschlag erst einmal.',
+  mistake: 'Auf meinem Zettel hat sich ein Fehler eingeschlichen. Findest du ihn?',
+  ways: 'Man kann das auf verschiedene Arten rechnen. Welche zwei Wege stimmen?',
+  scale: 'Bring die Waage ins Gleichgewicht – dann wissen wir, was fehlt.',
+  drag: 'Leg die fehlenden Sachen dazu, bis es genug sind.'
 };
 export const LOB_OP = ['{ergebnis}! Genau richtig, {name}.', 'Stimmt, {ergebnis}. Danke dir!', '{ergebnis} – prima gerechnet.', 'Richtig! Das hilft mir sehr.', '{ergebnis}! Damit kommen wir weiter.'];
 export const PASS_OP = '{ort}: Du hast {person} geholfen. Auf deinem Lieferschein: {a}.';
