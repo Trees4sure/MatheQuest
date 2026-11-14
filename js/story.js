@@ -27,7 +27,7 @@ export const STORY = {
       'Ah, da ist der Korb ja! Zähl bitte mit mir die Eier zusammen.',
       'Ein paar Eier hat Hoppel schon angestupst. Schau, wie viele noch heil sind.',
       'Jetzt füllen wir die Kartons. Wie viele fehlen noch?',
-      'Zwei Hühner haben heute gelegt. Welches war fleißiger?',
+      'Zwei Hühner haben heute gelegt. Welches war fleißiger – oder waren beide gleich fleißig?',
       'Auf deinem Lieferschein steht schon einiges. Rechne mit, was zusammenkommt.'
     ],
     lob: [
@@ -50,7 +50,7 @@ export const STORY = {
       'Ich backe Brötchen für die Helfer. Rechne für mich, wie viele es werden.',
       'Die Brötchen kommen in Tüten. Verteile sie gerecht.',
       'Ich habe drei Rechnungen auf meinen Zettel geschrieben. Eine stimmt bestimmt nicht – findest du sie?',
-      'Zwei Bleche sind fertig. Auf welchem liegt mehr?',
+      'Zwei Bleche sind fertig. Auf welchem liegt mehr – oder ist es gleich viel?',
       'Ein Teil wird schon verkauft. Wie viel bleibt für das Fest?'
     ],
     lob: [
@@ -72,7 +72,7 @@ export const STORY = {
     ask: [
       'Im Zug sitzen schon Gäste. Rechne mit mir, wie viele noch Platz haben.',
       'Am nächsten Halt steigen noch welche ein. Wie viele sind es dann?',
-      'Zwei Wagen sind angekommen. Wo sitzen mehr Gäste?',
+      'Zwei Lieferungen Fahrkarten sind da. Wo sind mehr – oder gleich viele?',
       'Die Kirschkisten kommen auf meine Gepäckwaage. Beide Seiten müssen gleich schwer sein.',
       'Die Fahrkarten liegen in Umschlägen. Reichen sie für alle Gäste? Schätz erst mal!'
     ],
@@ -83,8 +83,8 @@ export const STORY = {
       '{ergebnis} – jetzt ist meine Liste vollständig.',
       'Gut geschätzt! Genau sind es {ergebnis} Fahrkarten. Alles pünktlich, ausnahmsweise!'
     ],
-    patzer: { fips: false, text: 'Der Zug hat Verspätung – genau wie ich. Die Kirschkisten stehen noch auf dem Bahnsteig durcheinander.' },
-    rettung: 'Hilf mir, {name}, die Kisten zu ordnen, bevor der Zug weiterfährt.',
+    patzer: { fips: false, text: 'Der Zug hat Verspätung – genau wie ich. Jetzt liegen die Fahrkarten auf dem Bahnsteig durcheinander.' },
+    rettung: 'Hilf mir, {name}, die Fahrkarten zu ordnen, bevor der Zug mit den Kirschen kommt.',
     kette: 'Mit deinem Lieferschein rechnen wir die letzte Lieferung aus.',
     schluss: 'Die Kirschen sind da! Aber Bäckerin Mehl ruft: Ohne Wasser wird der Guss nichts. Auf zur Feuerwehr!',
     pass: 'Am Bahnhof hast du Schaffner Schulz geholfen, die Kirschen zu holen: {a} Gäste fuhren mit.'
@@ -116,7 +116,7 @@ export const STORY = {
     beitrag: 'den Kuchentisch',
     hallo: 'Hm. Da bist du ja, {name}. Der Kuchentisch braucht noch Beine. Und Schrauben. Und Hilfe.',
     ask: [
-      'Zwei Kisten mit Bauteilen. Hm. Welche hat mehr?',
+      'Zwei Kisten mit Bauteilen. Hm. Welche hat mehr – oder ist es gleich viel?',
       'Hm. Die Bausätze kann man auf verschiedene Arten ausrechnen. Welche zwei Wege stimmen?',
       'Ein paar Teile sind schon verbaut. Was bleibt übrig?',
       'Die Schrauben sollen gerecht auf die Tischbeine. Wie viele für jedes?',
@@ -166,7 +166,7 @@ export const ASK_OP = {
   add: 'Kommt noch etwas dazu? Rechne mit mir, wie viel es zusammen ist.',
   sub: 'Ein Teil ist schon weg. Wie viel bleibt übrig?',
   missing: 'Wir haben schon etwas, aber nicht genug. Wie viel fehlt noch?',
-  compare: 'Zwei Lieferungen – welche ist größer?',
+  compare: 'Zwei Lieferungen – welche ist größer, oder sind sie gleich?',
   mul: 'Alles ist in gleich großen Packungen. Wie viel ist es insgesamt?',
   div: 'Das soll gerecht verteilt werden. Wie viel bekommt jeder?',
   frac: 'Nur ein Teil davon ist für den Festkuchen. Wie viel ist das?',

@@ -145,8 +145,9 @@ function greeting() {
 function screenMap() {
   const p = store.current(), due = dueSkills(p).filter((s) => TOPIC_BY_ID[s]).length, goals = store.goals();
   const d = store.day();
-  main.innerHTML = `${topbar()}<section class="screen map">
-    <div class="greet"><div class="greet-fips">${mascot({ hat: p.cosmetic })}</div><div class="bubble">${esc(greeting())}</div></div>
+  main.innerHTML = `${topbar()}<section class="screen map g-screen">
+    <header class="g-title"><small>TRAININGSPLATZ</small><h1>Üben & Entdecken</h1></header>
+    <div class="greet"><div class="greet-fips"><img src="assets/chars/fips-froh.webp" alt="Fips"></div><div class="bubble">${esc(greeting())}</div></div>
     <div class="goals">${goals.map((g) => `<div class="goal"><span>${g.emoji}</span>${esc(g.text)}</div>`).join("")}
       <div class="daybar" aria-label="Tagesziel"><div style="width:${Math.min(100, (d.solved / p.dailyGoal) * 100)}%"></div></div></div>
     <div class="quick">
@@ -154,10 +155,11 @@ function screenMap() {
       ${p.mistakes.length ? `<button class="quick-btn" data-go="#/repair">🔧 Fehler-Werkstatt <b>${p.mistakes.length}</b></button>` : ""}
       <button class="quick-btn" data-go="#/collection">🎒 Sammlung</button>
       <button class="quick-btn" data-go="#/ranking">🏆 Rangliste</button>
-      <button class="quick-btn" data-go="#/klasse7">📘 Klasse 7 · Profi-Labor</button>
+      ${p.grade >= 6 ? `<button class="quick-btn" data-go="#/klasse7">📘 Klasse 7 · Profi-Labor</button>` : ""}
       <button class="quick-btn" data-go="#/explore/wald">🌳 Bonus: Rätselpfad am Dorfbach</button>
     </div>
-    <h2 class="map-h">Üben & Entdecken</h2><button class="ghost" data-go="#/map">← Zur Abenteuerkarte</button><div class="map-illustration"><img src="assets/scenes/rechenbach-karte.webp" alt="Blick auf das Dorf Rechenbach mit seinen Spielorten"><div class="map-illustration-caption">Sechs Orte. Viele Wege. Jeden Tag neue Aufgaben.</div></div>
+    <div class="map-illustration"><img src="assets/scenes/rechenbach-karte.webp" alt="Blick auf das Dorf Rechenbach mit seinen Spielorten"><div class="map-illustration-caption">Sechs Orte. Viele Wege. Jeden Tag neue Aufgaben.</div></div>
+    <h2 class="g-h2">Wähle einen Übungsort</h2>
     <div class="numeria">${WORLDS.map((w, i) => {
       const stars = store.worldStars(w), max = w.topics.length * 3, home = w.grade === p.grade, roomDone = !!p.rooms?.[w.id]?._mission?.done;
       return `<button class="region${home ? " home" : ""}${p.bosses[w.id] ? " cleared" : ""}" data-go="#/region/${w.id}" style="--c:${w.color};--i:${i}">
@@ -208,8 +210,8 @@ function screenRanking(){
 
 function screenCollection() {
   const p = store.current();
-  main.innerHTML = `${topbar()}<section class="screen">
-    <div class="banner plain"><button class="ghost back" data-go="#/map" aria-label="Zurück">←</button><h1>🎒 Deine Sammlung</h1></div>
+  main.innerHTML = `${topbar()}<section class="screen g-screen coll">
+    <header class="g-title"><small>DEINE SCHATZKISTE</small><h1>Sammlung</h1></header>
     <h2>Dein Dorfpass</h2><p class="muted">Für jeden Ort, an dem du fünf Aufträge erledigst, gibt es einen Stempel. Mit sechs Stempeln beginnt das Dorffest.</p><div class="v-stamps">${[1,2,3,4,5,6].map(i=>`<span class="journey-stamp ${p.campaign?.chapters?.["w"+i]?.completed?"earned":""}">${p.campaign?.chapters?.["w"+i]?.completed?"✓":i}</span>`).join("")}</div>${[1,2,3,4,5,6].every(i=>p.campaign?.chapters?.["w"+i]?.completed)?`<button class="btn" data-go="#/dorffest">Zum Dorffest und zur Urkunde</button>`:""}<h2>🏆 Gewonnene Rechen-Wettstreite</h2>
     <div class="crystals">${WORLDS.map((w) => `<div class="crystal stamp${p.bosses[w.id] ? " have" : ""}" style="--c:${w.color}" title="${esc(w.name)}"><span class="stamp-emo">${w.emoji}</span><small>${esc(w.name)}</small></div>`).join("")}</div>
     <p class="muted">Die Rechen-Wettstreite sind eine Extra-Herausforderung. Du findest sie unter „Üben“ an jedem Ort. · Sticker im Album: ${p.shards} ${sticker(20)}</p>

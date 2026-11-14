@@ -33,7 +33,7 @@ export function lock(root, p, weiter) {
   let help = -1;
   const draw = () => {
     root.innerHTML = `<section class="f-lock">
-      <div class="f-tent" aria-hidden="true"><img src="assets/scenes/dorffest.webp" alt=""><div class="f-flap l"></div><div class="f-flap r"></div><div class="f-padlock">🔒</div></div>
+      <div class="f-tent" aria-hidden="true"><img class="f-bg" src="assets/scenes/erkundung-w6.webp" alt=""><img class="f-zelt zu" src="assets/props/festzelt-zu.webp" alt=""><img class="f-zelt offen" src="assets/props/festzelt-offen.webp" alt=""></div>
       <div class="f-card"><p class="v-eyebrow">DAS FESTZELT IST NOCH ZU</p><h1>Knack das Zahlenschloss!</h1>
       <p>Bürgermeisterin Nolte hat den Code aus deinen eigenen Ergebnissen gemacht. Jedes Rad braucht die <b>erste Ziffer</b> – die ganz vorne – eines Ergebnisses von deinem Lieferschein.</p>
       <div class="f-wheels">${clues.map((c, i) => {
@@ -62,7 +62,7 @@ export function lock(root, p, weiter) {
         sound('wrong');
         const n = ok.filter(Boolean).length;
         root.querySelector('.f-status').textContent = n ? `${n} von 3 Rädern stimmen schon. Schau noch einmal auf die Lieferscheine.` : 'Noch klemmt das Schloss. Such auf jedem Lieferschein das richtige Ergebnis.';
-        root.querySelector('.f-padlock')?.animate([{ transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'none' }], { duration: 300, iterations: 2 });
+        root.querySelector('.f-zelt.zu')?.animate([{ transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'none' }], { duration: 300, iterations: 2 });
       }
     }
   }, { signal: ctl.signal });
@@ -88,14 +88,13 @@ export function stand(root) {
   root.addEventListener('cleanup', () => ctl.abort(), { once: true });
   const place = (id, x, y) => { pos[id] = [Math.round(Math.max(4, Math.min(96, x))), Math.round(Math.max(8, Math.min(94, y)))]; store.save(); };
   /* Antippen legt ein Bauteil auf den nächsten freien Platz der Theke. */
-  const autoSpot = () => { const used = Object.values(pos).length; return [10 + (used * 13) % 80, 70 - Math.floor(used / 7) * 14]; };
+  const autoSpot = () => { const used = Object.values(pos).length; return [24 + (used * 9) % 54, 58 - Math.floor(used / 7) * 10]; };
   const draw = () => {
     const placed = all.filter((x) => pos[x.id]), free = all.filter((x) => !pos[x.id]);
     root.innerHTML = `<section class="s-screen">
       <header class="s-head"><p class="v-eyebrow">MEIN FESTSTAND</p><h1>${esc(p.name)}s Stand</h1><p>${all.length ? `Jeder gelöste Auftrag bringt ein Bauteil. Zieh die Sachen auf deinen Stand und ordne sie, wie es dir gefällt. <b>${all.filter((x) => !x.big).length} von 30</b> Bauteilen verdient${all.some((x) => x.big) ? ' – und der Festkuchen!' : '.'}` : 'Noch ist dein Stand leer. Löse Aufträge im Dorf – jeder bringt dir ein Bauteil.'}</p></header>
       <div class="s-stall" data-drop="stall" aria-label="Dein Feststand">
-        <div class="s-awning" aria-hidden="true"></div><div class="s-sign">${esc(p.name)}s Leckereien</div>
-        <div class="s-posts" aria-hidden="true"><i></i><i></i></div><div class="s-counter" aria-hidden="true"></div>
+        <div class="s-booth" aria-hidden="true"><img src="assets/props/feststand.webp" alt="" draggable="false"><span class="s-sign">${esc(p.name)}s Feststand</span></div>
         ${placed.map((x) => `<button class="s-piece${x.big ? ' big' : ''}" data-drag data-from="stall" data-id="${x.id}" style="--x:${pos[x.id][0]}%;--y:${pos[x.id][1]}%" aria-label="${esc(x.c.short)} – antippen legt es zurück">${pic(x.c)}</button>`).join('')}
       </div>
       <div class="s-tray" data-drop="tray"><p>${free.length ? `Deine Bauteile (${free.length}) – ziehen oder antippen:` : all.length ? 'Alles steht auf dem Stand. Toll sieht er aus!' : ''}</p>
