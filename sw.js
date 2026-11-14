@@ -1,6 +1,6 @@
 // MatheQuest – Service Worker: alles offline verfügbar.
 // Nach Änderungen VERSION hochzählen (mathequest-v3, -v4 …), dann lädt das Gerät die neuen Dateien.
-const VERSION = "mathequest-v13";
+const VERSION = "mathequest-v19";
 const CORE = [
   "./",
   "./index.html",
@@ -8,11 +8,34 @@ const CORE = [
   "./apple-touch-icon.png",
   "./assets/chars/ben-froh.webp",
   "./assets/chars/brumm-froh.webp",
+  "./assets/chars/brumm-gang.webp",
   "./assets/chars/brumm-grummelig.webp",
+  "./assets/chars/ben-gang.webp",
+  "./assets/chars/feldhase.webp",
+  "./assets/chars/portrait-fiete-froh.webp",
+  "./assets/chars/portrait-fiete.webp",
+  "./assets/chars/portrait-hoppe-froh.webp",
+  "./assets/chars/portrait-hoppe.webp",
+  "./assets/chars/portrait-mehl-froh.webp",
+  "./assets/chars/portrait-mehl.webp",
+  "./assets/chars/portrait-nolte-froh.webp",
+  "./assets/chars/portrait-nolte.webp",
+  "./assets/chars/portrait-schulz-froh.webp",
+  "./assets/chars/portrait-schulz.webp",
+  "./assets/chars/fips-freut.webp",
+  "./assets/chars/fips-fragt.webp",
+  "./assets/chars/festkuchen.webp",
   "./assets/chars/fips-froh.webp",
-  "./assets/chars/fips-lauf.webp",
+  "./assets/chars/hoppel.webp",
+  "./assets/chars/fips-gang.webp",
+  "./assets/chars/lina-gang.webp",
   "./assets/chars/lina-froh.webp",
-  "./assets/chars/lina-lauf.webp",
+  "./assets/items/bauklotz.webp",
+  "./assets/items/brot.webp",
+  "./assets/items/ei.webp",
+  "./assets/items/fahrkarte.webp",
+  "./assets/items/kuchenstueck.webp",
+  "./assets/items/trinkflasche.webp",
   "./assets/math/absperrung-vektor.webp",
   "./assets/math/bruchkreise.webp",
   "./assets/math/brueckenbretter.webp",
@@ -37,11 +60,22 @@ const CORE = [
   "./assets/scenes/erkundung-w6.webp",
   "./assets/scenes/erkundung-wald.webp",
   "./assets/scenes/feuerwehr.webp",
+  "./assets/scenes/gemuesegarten.webp",
   "./assets/scenes/markt.webp",
   "./assets/scenes/rechenbach-karte.webp",
   "./assets/scenes/schreinerei.webp",
   "./css/journey.css",
+  "./css/kind.css",
   "./css/notebook.css",
+  "./css/share.css",
+  "./css/spiel.css",
+  "./js/drag.js",
+  "./js/fest.js",
+  "./js/hud.js",
+  "./js/gang.js",
+  "./js/install.js",
+  "./js/share.js",
+  "./js/vendor/qrcode.js",
   "./css/style.css",
   "./fonts/atkinson-hyperlegible-latin-400-normal.woff2",
   "./fonts/atkinson-hyperlegible-latin-700-normal.woff2",
@@ -76,20 +110,28 @@ const CORE = [
   "./js/questworld.js",
   "./js/scenes.js",
   "./js/sprites.js",
+  "./js/story.js",
   "./js/store.js",
   "./js/ui.js",
   "./maskable-512.png"
 ];
 // Schriften aus dem Holzi-Projekt: nur mitnehmen, wenn vorhanden (MatheQuest läuft auch ohne sie)
+const MUST = ["./", "./index.html", "./js/app.js", "./manifest.webmanifest"];
 const OPTIONAL = [
   "./fonts/grandstander-latin-600-normal.woff2", "./fonts/grandstander-latin-800-normal.woff2",
   "./fonts/atkinson-hyperlegible-latin-400-normal.woff2", "./fonts/atkinson-hyperlegible-latin-700-normal.woff2",
 ];
 
 self.addEventListener("install", (e) => {
+  // Nur die Startdateien sind Pflicht. Alles andere wird einzeln geladen: Fehlt online eine Datei
+  // (z. B. beim Hochladen vergessen), richtet sich der Service Worker trotzdem ein – die App bleibt
+  // installierbar und bekommt Updates; die fehlende Datei kommt später aus dem Netz.
   e.waitUntil(caches.open(VERSION).then(async (c) => {
-    await c.addAll(CORE.map((u) => new Request(u, { cache: "reload" })));
-    await Promise.all(OPTIONAL.map((u) => c.add(new Request(u, { cache: "reload" })).catch(() => {})));
+    await c.addAll(MUST.map((u) => new Request(u, { cache: "reload" })));
+    const rest = [...CORE.filter((u) => !MUST.includes(u)), ...OPTIONAL];
+    const failed = [];
+    await Promise.all(rest.map((u) => c.add(new Request(u, { cache: "reload" })).catch(() => failed.push(u))));
+    if (failed.length) console.warn("MatheQuest: nicht geladen", failed);
   }).then(() => self.skipWaiting()));
 });
 
@@ -119,5 +161,9 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   // Dateien: Cache zuerst, sonst Netz
-  e.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req)));
+  e.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req).then((res) => {
+    // Was beim Einrichten fehlte, wird beim ersten Abruf nachgeholt.
+    if (res.ok && CORE.includes("." + url.pathname.slice(new URL(self.registration.scope).pathname.length - 1))) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }
+    return res;
+  })));
 });
