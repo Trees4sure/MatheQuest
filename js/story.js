@@ -3,17 +3,17 @@
    aber für den Kuchen fehlt an jedem Ort noch etwas. Jeder Ort liefert ein Stück davon.
    Platzhalter: {name} = Name des Kindes, {held} = Lina oder Ben, {ergebnis} = Ergebnis des gerade gelösten Auftrags,
    {a} {b} … = Ergebnisse vom Lieferschein (Dorfpass-Satz). Fips ist ein Hund: er reagiert, er spricht nie.
-   Porträts: img = Brustbild in der Sprechblase, froh = Bild beim Lob (aus JPs Bogen, tools/cut-sheet.py). */
+   Porträts: img = Brustbild in der Sprechblase, froh = Bild beim Lob, fig = ganze Figur in der Szene (alle aus JPs Bogen, tools/cut-sheet.py). */
 
 export const FADEN = 'Heute Abend wird der große Festkuchen angeschnitten. Doch an jedem Ort fehlt noch etwas dafür.';
 
 export const PEOPLE = {
-  w1: { name: 'Frau Hoppe', emoji: '👩‍🌾', img: 'assets/chars/portrait-hoppe.webp', froh: 'assets/chars/portrait-hoppe-froh.webp', trait: 'vergisst ständig, wo sie etwas hingelegt hat' },
-  w2: { name: 'Bäckerin Mehl', emoji: '👩‍🍳', img: 'assets/chars/portrait-mehl.webp', froh: 'assets/chars/portrait-mehl-froh.webp', trait: 'verzählt sich gern' },
-  w3: { name: 'Schaffner Schulz', emoji: '👨‍✈️', img: 'assets/chars/portrait-schulz.webp', froh: 'assets/chars/portrait-schulz-froh.webp', trait: 'ist immer ein bisschen zu spät' },
-  w4: { name: 'Feuerwehrfrau Fiete', emoji: '👩‍🚒', img: 'assets/chars/portrait-fiete.webp', froh: 'assets/chars/portrait-fiete-froh.webp', trait: 'sagt bei allem „Kein Problem!“' },
-  w5: { name: 'Schreinermeister Brumm', emoji: '🧔', img: 'brumm', trait: 'brummt erst und freut sich dann' },
-  w6: { name: 'Bürgermeisterin Nolte', emoji: '👩‍💼', img: 'assets/chars/portrait-nolte.webp', froh: 'assets/chars/portrait-nolte-froh.webp', trait: 'hält gern Reden' }
+  w1: { name: 'Frau Hoppe', emoji: '👩‍🌾', img: 'assets/chars/portrait-hoppe.webp', froh: 'assets/chars/portrait-hoppe-froh.webp', fig: 'assets/chars/figur-hoppe.webp', trait: 'vergisst ständig, wo sie etwas hingelegt hat' },
+  w2: { name: 'Bäckerin Mehl', emoji: '👩‍🍳', img: 'assets/chars/portrait-mehl.webp', froh: 'assets/chars/portrait-mehl-froh.webp', fig: 'assets/chars/figur-mehl.webp', trait: 'verzählt sich gern' },
+  w3: { name: 'Schaffner Schulz', emoji: '👨‍✈️', img: 'assets/chars/portrait-schulz.webp', froh: 'assets/chars/portrait-schulz-froh.webp', fig: 'assets/chars/figur-schulz.webp', trait: 'ist immer ein bisschen zu spät' },
+  w4: { name: 'Feuerwehrfrau Fiete', emoji: '👩‍🚒', img: 'assets/chars/portrait-fiete.webp', froh: 'assets/chars/portrait-fiete-froh.webp', fig: 'assets/chars/figur-fiete.webp', trait: 'sagt bei allem „Kein Problem!“' },
+  w5: { name: 'Schreinermeister Brumm', emoji: '🧔', img: 'brumm', fig: 'assets/chars/brumm-froh.webp', trait: 'brummt erst und freut sich dann' },
+  w6: { name: 'Bürgermeisterin Nolte', emoji: '👩‍💼', img: 'assets/chars/portrait-nolte.webp', froh: 'assets/chars/portrait-nolte-froh.webp', fig: 'assets/chars/figur-nolte.webp', trait: 'hält gern Reden' }
 };
 
 /* Je Kapitel: was der Ort zum Kuchen beiträgt, Begrüßung, fünf Auftragssätze, fünf Lobsätze,

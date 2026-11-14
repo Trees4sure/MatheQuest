@@ -39,7 +39,7 @@ export function stepPlan(id,step,grade){
 }
 const TITLES={add:()=>'Alles zusammenzählen',sub:()=>'Den Vorrat prüfen',missing:()=>'Die Bestellung ergänzen',compare:()=>'Zwei Lieferungen vergleichen',mul:c=>`${c.pack} packen`,div:()=>'Gerecht verteilen',frac:()=>'Einen Anteil abmessen',decimal:()=>'Die Kasse rechnen',percent:()=>'Für die Helfer zurücklegen',ratio:()=>'Eintrittskarten berechnen',equation:()=>'Den Bestellzettel lösen',area:()=>'Den Platz ausmessen'};
 const MODE_TITLES={estimate:'Reicht das?',mistake:'Den Fehler finden',ways:'Zwei Rechenwege'};
-export const stepTitles=(c,grade)=>[0,1,2,3,4].map(step=>{const [op,mode]=stepPlan(c.id,step,grade);return ['add','sub','mul'].includes(op)&&MODE_TITLES[mode]||TITLES[op](c);});
+export const stepTitles=(c,grade)=>[0,1,2,3,4].map(step=>{const [op,mode]=stepPlan(c.id,step,grade);return ['add','sub','mul'].includes(op)&&MODE_TITLES[mode]||(step===4&&grade<=4&&['add','sub','missing'].includes(op)?'Mit dem Lieferschein weiterrechnen':TITLES[op](c));});
 
 export const chapterCount=p=>CHAPTERS.filter(c=>p.campaign?.chapters?.[c.id]?.completed).length;
 export const nextChapter=p=>CHAPTERS.find(c=>!p.campaign?.chapters?.[c.id]?.completed)||CHAPTERS[5];
@@ -146,16 +146,18 @@ function stageC(t,c,grade,level,rng){
  if(t.mode==='mistake'){
   const errs=(t.op==='mul'?[B,-B,1,-1,10]:[1,-1,10,-10].map(k=>k*sc)).map(e=>t.answer+e).filter(v=>v>=0&&v!==t.answer);
   const wrong=errs[Math.floor(rng()*errs.length)];
-  const lines=[{t:`${A} ${SYM[t.op]} ${B} = ${wrong}`,ok:false}];
-  for(let tries=0;lines.length<3&&tries<50;tries++){
-   let x,y,txt;
-   if(t.op==='mul'){x=rnd(2,grade<=3?9:12,rng);y=rnd(2,10,rng);txt=`${x} · ${y} = ${x*y}`;}
-   else{x=rnd(2,Math.max(2,Math.floor(lim/sc/2)),rng)*sc;y=rnd(1,Math.max(1,Math.floor((lim-x)/sc)),rng)*sc;if(x+y>lim)continue;txt=t.op==='add'?`${x} + ${y} = ${x+y}`:`${x+y} − ${y} = ${x}`;}
-   if(!lines.some(l=>l.t===txt))lines.push({t:txt,ok:true});
-  }
+  /* Drei Helfer rechnen DIESELBE Aufgabe: zwei richtig (auch auf anderem Weg), einer verrechnet sich. */
+  const ok=[`${A} ${SYM[t.op]} ${B} = ${t.answer}`];
+  if(t.op!=='sub')ok.push(`${B} ${SYM[t.op]} ${A} = ${t.answer}`);
+  if(t.op==='sub'&&B>=2*sc){const x=Math.floor(B/sc/2)*sc;ok.push(`${A} − ${x} − ${B-x} = ${t.answer}`);}
+  if(t.op==='sub')ok.push(`${A} − ${B+sc} + ${sc} = ${t.answer}`);
+  if(t.op==='add'&&B>=2*sc){const x=Math.floor(B/sc/2)*sc;ok.push(`${A} + ${x} + ${B-x} = ${t.answer}`);}
+  if(t.op==='mul')ok.push(`${A-1} · ${B} + ${B} = ${t.answer}`);
+  const uniq=[...new Set(ok)];
+  const lines=[{t:`${A} ${SYM[t.op]} ${B} = ${wrong}`,ok:false},...uniq.slice(0,2).map(x=>({t:x,ok:true}))];
   const pos=Math.floor(rng()*lines.length),bad=lines.shift();lines.splice(pos,0,bad);
   t.lines=lines;t.goal=String(pos);t.wrong=wrong;
-  t.question=t.question.replace(/[^.!]*\?$/,'').trim()+' Auf dem Zettel stehen drei Rechnungen dazu. Eine ist falsch – tippe sie an.';
+  t.question=t.question.replace(/[^.!]*\?$/,'').trim()+' Drei Helfer haben das ausgerechnet. Einer hat sich verrechnet – tippe seine Rechnung an.';
   t.explain=`Falsch war ${A} ${SYM[t.op]} ${B} = ${wrong}. Richtig ist ${t.answer}. `+t.explain;
   t.hints=['Rechne jede Zeile auf dem Zettel selbst nach.',`Prüfe besonders die Rechnung mit ${A} und ${B}.`];
   return;
