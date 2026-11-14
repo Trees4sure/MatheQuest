@@ -349,3 +349,104 @@ body.hud-sub .map-h,body.hud-sub .screen h1{color:var(--wood-d)}
 .c-scale{height:222px}
 @media(max-width:650px){.c-scale{height:206px}}
 body.hud-sub #app .ghost[data-go="#/map"]:not(.row-actions *){display:none}
+
+/* ===================== v7.8: Auftragsbildschirm als Szene =====================
+   Die Szene ist die Bühne; die Aufgabe liegt als Pergament-Tafel darauf (Tablet: rechts schwebend, Handy: von unten
+   über die Szene geschoben). Person mit Sprechblase und Lautsprecher, Lieferschein und Denkzettel sind Gegenstände in
+   der Szene. Prüfen/Weiter stehen in einer Leiste, die unten stehen bleibt – sie rutscht nie mehr aus dem Bildschirm. */
+.j-scene .j-play{position:relative}
+.j-scene .j-stage{height:300px}
+.j-scene .j-delivery,.j-scene .j-scene-label{display:none}
+.j-scene .j-actors{left:calc(18% + var(--step,0) * 12%);transition:left 1s ease}
+/* Sprechblase als Comic-Blase in der Szene */
+.j-scene .j-stage .j-say{position:absolute;left:12px;top:12px;right:auto;max-width:min(560px,calc(100% - 24px));max-height:calc(100% - 110px);overflow:auto;margin:0;z-index:4;
+ padding:10px 14px 10px 10px;background:#fffaf0f2;border:3px solid var(--wood-d);border-radius:18px;box-shadow:0 5px 0 var(--wood-dd),0 10px 22px #0004}
+.j-scene .j-stage .j-say::after{content:"";position:absolute;left:34px;bottom:-14px;width:22px;height:22px;background:inherit;border-right:3px solid var(--wood-d);border-bottom:3px solid var(--wood-d);transform:rotate(45deg);border-radius:0 0 6px 0}
+.j-scene .j-stage .j-say{overflow:visible}
+.j-scene .j-say-por{width:66px;height:66px;border-radius:50%;background:#f1e4c4;border:3px solid #fff;box-shadow:0 0 0 2px var(--wood-d);overflow:hidden}
+.j-scene .j-say-img{height:70px}
+.j-scene .j-say-text p{font-size:17px}
+.j-say-read{order:3;flex:none;align-self:center;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;padding:0;font-size:22px;background:radial-gradient(circle at 35% 30%,#fff,#ffe29a);
+ border:3px solid var(--wood-d);box-shadow:0 3px 0 var(--wood-dd);cursor:pointer}
+.j-say-read:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood-dd)}
+/* Gegenstände in der Szene */
+.j-objs{position:absolute;right:12px;bottom:12px;z-index:4;display:flex;gap:10px}
+.j-obj{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:76px;min-height:72px;padding:6px 8px;border-radius:16px;
+ background:linear-gradient(var(--paper),var(--paper2));border:3px solid var(--wood-d);box-shadow:0 4px 0 var(--wood-dd),0 8px 14px #0004;color:var(--wood-d);font:800 12px var(--head);transition:transform .12s}
+.j-obj:hover{transform:translateY(-3px) rotate(-2deg)}.j-obj:active{transform:translateY(2px)}
+.j-obj-ico{font-size:30px;line-height:1;filter:drop-shadow(0 2px 0 #0002)}
+.j-obj-badge{position:absolute;top:-10px;right:-10px;min-width:30px;height:26px;padding:0 6px;display:grid;place-items:center;border-radius:99px;background:var(--leaf);color:#fff;font:900 12px var(--head);font-style:normal;border:2px solid #fff;box-shadow:0 2px 0 var(--leaf-d)}
+/* Auftragstafel */
+.j-scene .j-task{position:relative;z-index:5}
+.j-scene .j-task-top{margin-bottom:6px}
+.j-scene .j-answer-row{position:sticky;bottom:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px -6px 0;padding:12px 6px calc(10px + env(safe-area-inset-bottom));
+ background:linear-gradient(#fbefcf00,#fbefcf 16px)}
+.j-scene .j-answer-row .j-feedback{flex-basis:100%;margin:0;font-weight:800;color:var(--wood-d);text-align:center}
+.j-scene .j-answer-row .j-feedback:empty{display:none}
+.j-scene .j-answer-row .v-primary{flex:1}
+.j-scene .j-tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.j-scene .j-tools .ghost{min-height:46px;border-radius:99px;padding:6px 14px;font-family:var(--head);font-weight:800}
+.j-scene .j-task .notebook{margin:6px 0}
+/* Lieferschein als Zettel über der Szene */
+.j-sheet{position:fixed;inset:0;z-index:96;background:#1b120899;display:grid;place-items:center;padding:16px;animation:g-fade .2s}
+.j-sheet[hidden]{display:none}
+.j-sheet .j-story{position:relative;width:min(420px,100%);max-height:86svh;overflow:auto;transform:rotate(-1deg);padding:30px 20px 18px;display:block}
+.j-sheet-x{position:absolute;top:8px;right:8px}
+/* Tablet und größer: Szene füllt den Bildschirm, Tafel schwebt rechts darauf */
+@media(min-width:900px){
+ .j-scene{max-width:none!important;padding:0 16px 24px}
+ .j-scene .j-play{height:max(560px,calc(100svh - 130px))}
+ .j-scene .j-stage{position:absolute;inset:0;height:auto}
+ .j-scene .j-task{position:absolute;top:16px;right:16px;bottom:16px;width:min(470px,44%);overflow:auto;padding:18px 20px 0;overscroll-behavior:contain}
+ .j-scene .j-actors{left:calc(4% + var(--step,0) * 6.5%);height:40%}
+ .j-scene .j-objs{right:auto;left:calc(100% - min(470px,44%) - 32px);transform:translateX(-100%)}
+ .j-scene .j-stage .j-say{max-width:calc(100% - min(470px,44%) - 60px)}
+ .j-scene .j-loot{left:14px;bottom:14px}
+}
+/* Handy: Szene oben, Tafel schiebt sich darüber */
+@media(max-width:650px){
+ .j-scene .j-stage{height:300px}
+ .j-scene .j-task{margin-top:-26px;border-radius:24px 24px 18px 18px;padding:16px 14px 0}
+ .j-scene .j-stage .j-say{left:8px;right:8px;top:8px;max-width:none;max-height:none;padding:8px 8px 8px 8px}
+ .j-scene .j-say-por{width:50px;height:50px}.j-scene .j-say-img{height:54px}
+ .j-scene .j-say-text p{font-size:14px;line-height:1.3}
+ .j-say-read{width:44px;height:44px;font-size:19px}
+ .j-scene .j-objs{bottom:36px;gap:6px}.j-obj{min-width:64px;min-height:64px;padding:4px 6px;font-size:11px}.j-obj-ico{font-size:26px}
+ .j-scene .j-loot{bottom:34px}
+ .j-scene .j-actors{bottom:30px;height:36%;left:calc(4% + var(--step,0) * 8%)}
+}
+.reduce-motion .j-scene .j-actors{transition:none}
+/* Denkzettel nur über den Gegenstand in der Szene öffnen; offen erscheint er auf der Tafel (mit eigenem Zuklappen). */
+.j-scene .j-task .notebook:not([open]){display:none}
+/* Handy: Aktionsleiste fest am unteren Rand (wie in einem Spiel) – Prüfen und Weiter sind immer erreichbar,
+   auch wenn der Denkzettel offen ist oder die Aufgabe lang. */
+@media(max-width:650px){
+ .j-scene .j-answer-row{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:30;padding:8px 12px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(#fbefcf,#f3dcaa);border-top:3px solid var(--wood-d);box-shadow:0 -6px 16px #0003}
+ .j-scene{padding-bottom:120px}
+ .j-scene .j-answer-row input{min-width:0;flex:0 1 110px}
+}
+@media(max-width:650px){.j-scene .j-answer-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+
+/* ---------- v7.8 Nachbesserung nach der Optik-Prüfung ---------- */
+/* Die sprechende Person steht in der Szene, die Spitze der Sprechblase zeigt auf sie. */
+.j-person{position:absolute;left:2%;bottom:3%;height:62%;width:auto;z-index:2;filter:drop-shadow(2px 6px 4px #0005);pointer-events:none}
+.j-scene .j-stage .j-say::after{left:min(110px,9%)}
+@media(min-width:900px){
+ .j-scene .j-play{height:max(520px,calc(100svh - 190px))}
+ .j-scene .j-task{padding-bottom:18px}
+ .j-scene .j-actors{left:calc(20% + var(--step,0) * 4%);height:36%}
+ .j-scene .j-objs{top:calc(50% - 30px);bottom:auto}
+}
+@media(max-width:650px){
+ .j-scene .j-stage{height:350px}
+ .j-person{height:46%;left:1%}
+ .j-scene .j-stage .j-say::after{left:30px}
+ .j-scene .j-actors{left:calc(26% + var(--step,0) * 4%);height:32%}
+ .j-header small{font-size:12px}
+}
+.j-scene .j-tools .ghost{min-height:48px}
+/* Denkzettel: ein Blatt Papier statt eines Formulars */
+.j-scene .notebook[open]{background:repeating-linear-gradient(#fffef8 0 30px,#d6e4f5 30px 32px);border:2px solid #d9cfb3;border-radius:6px;box-shadow:0 6px 12px #0002;transform:rotate(-.4deg)}
+.j-scene .notebook[open] .np-intro,.j-scene .notebook[open] .np-memory{display:none}
+.j-scene .notebook textarea{background:transparent;font:600 19px var(--head);border:2px dashed #c9b98f;border-radius:8px;color:#2c2a22}
