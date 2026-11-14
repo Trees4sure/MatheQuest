@@ -1,6 +1,6 @@
 // MatheQuest – Service Worker: alles offline verfügbar.
 // Nach Änderungen VERSION hochzählen (mathequest-v3, -v4 …), dann lädt das Gerät die neuen Dateien.
-const VERSION = "mathequest-v19";
+const VERSION = "mathequest-v20";
 const CORE = [
   "./",
   "./index.html",
@@ -12,6 +12,11 @@ const CORE = [
   "./assets/chars/brumm-grummelig.webp",
   "./assets/chars/ben-gang.webp",
   "./assets/chars/feldhase.webp",
+  "./assets/chars/figur-fiete.webp",
+  "./assets/chars/figur-hoppe.webp",
+  "./assets/chars/figur-mehl.webp",
+  "./assets/chars/figur-nolte.webp",
+  "./assets/chars/figur-schulz.webp",
   "./assets/chars/portrait-fiete-froh.webp",
   "./assets/chars/portrait-fiete.webp",
   "./assets/chars/portrait-hoppe-froh.webp",
